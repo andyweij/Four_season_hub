@@ -1,0 +1,398 @@
+{
+  "Llama3.1-FFM-8B": {
+    "modelType": "ffm-llama",
+    "modelArtifact": "Llama3.1-FFM-8B",
+    "engineImageName": "vllm/vllm-openai:v0.8.4",
+    "engineType": "vllm",
+    "size": 16069723737,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": true,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 8,
+      "hiddenSize": 4096,
+      "numHiddenLayers": 32,
+      "numAttentionHeads": 32,
+      "vocabSize": 128256
+    },
+    "launchConfig": {
+      "dtype": "half",
+      "max-model-len": 4096,
+      "gpu-memory-utilization": 0.8,
+      "max-num-seqs": 1,
+      "tool-call-parser": "llama3_json",
+      "boolean": [
+        "disable-mm-preprocessor-cache",
+        "disable-log-requests",
+        "enable-auto-tool-choice"
+      ],
+      "env": [
+        "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
+      ]
+    },
+    "metadata": {}
+  },
+  "Llama3.2-FFM-11B": {
+    "modelType": "llama",
+    "modelArtifact": "Llama3.2-FFM-11B",
+    "engineImageName": "vllm/vllm-openai:v0.8.4",
+    "engineType": "vllm",
+    "size": 21351378418,
+    "imagesSupport": 1,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": true,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 11.63,
+      "hiddenSize": 4096,
+      "numHiddenLayers": 40,
+      "numAttentionHeads": 32,
+      "vocabSize": 128256
+    },
+    "launchConfig": {
+      "dtype": "half",
+      "max-model-len": 8192,
+      "gpu-memory-utilization": 0.8,
+      "max-num-seqs": 1,
+      "boolean": [
+        "disable-mm-preprocessor-cache",
+        "disable-log-requests"
+      ],
+      "env": [
+        "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
+      ]
+    },
+    "metadata": {}
+  },
+  "Llama3.3-FFM-70B": {
+    "modelType": "llama",
+    "modelArtifact": "Llama3.3-FFM-70B",
+    "engineImageName": "vllm/vllm-openai:v0.8.4",
+    "engineType": "vllm",
+    "size": 141124851494,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": true,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 11.63,
+      "hiddenSize": 4096,
+      "numHiddenLayers": 40,
+      "numAttentionHeads": 32,
+      "vocabSize": 128256
+    },
+    "launchConfig": {
+      "dtype": "half",
+      "max-model-len": 8192,
+      "gpu-memory-utilization": 0.6,
+      "max-num-seqs": 1,
+      "boolean": [
+        "disable-mm-preprocessor-cache",
+        "disable-log-requests"
+      ],
+      "env": [
+        "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
+      ]
+    },
+    "metadata": {}
+  },
+  "gpt-oss-20b": {
+    "modelType": "gpt-oss",
+    "modelArtifact": "gpt-oss-20b",
+    "engineImageName": "vllm/vllm-openai:v0.11.0",
+    "engineType": "vllm",
+    "size": 41301465516,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": true,
+    "isChatModel": true,
+    "modelConfig": {
+      "precisionBytes": 0.5,
+      "overheadFactor": 1.08,
+      "totalParametersB": 20,
+      "hiddenSize": 2880,
+      "numHiddenLayers": 24,
+      "numAttentionHeads": 64,
+      "vocabSize": 201088
+    },
+    "launchConfig": {
+      "max-model-len": 131072,
+      "max-num-batched-tokens": 32768,
+      "gpu-memory-utilization": 0.92,
+      "max-num-seqs": 1,
+      "reasoning-parser": "openai_gptoss",
+      "tool-call-parser": "openai",
+      "boolean": [
+        "trust-remote-code",
+        "disable-mm-preprocessor-cache",
+        "enable-log-requests",
+        "enable-auto-tool-choice"
+      ],
+      "env": [
+        "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
+      ]
+    },
+    "metadata": {}
+  },
+  "gpt-oss-120b": {
+    "modelType": "gpt-oss",
+    "modelArtifact": "gpt-oss-120b",
+    "engineImageName": "vllm/vllm-openai:v0.11.0",
+    "engineType": "vllm",
+    "size": 195764040609,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": true,
+    "isChatModel": true,
+    "modelConfig": {
+      "precisionBytes": 0.5,
+      "overheadFactor": 1.08,
+      "totalParametersB": 20,
+      "hiddenSize": 2880,
+      "numHiddenLayers": 24,
+      "numAttentionHeads": 64,
+      "vocabSize": 201088
+    },
+    "launchConfig": {
+      "max-model-len": 131072,
+      "max-num-batched-tokens": 32768,
+      "gpu-memory-utilization": 0.8,
+      "max-num-seqs": 1,
+      "boolean": [
+        "trust-remote-code",
+        "disable-mm-preprocessor-cache",
+        "enable-log-requests"
+      ],
+      "env": [
+        "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
+      ]
+    },
+    "metadata": {}
+  },
+  "gemma-4-26B-A4B-it": {
+    "modelType": "gemma",
+    "modelArtifact": "gemma-4-26B-A4B-it",
+    "engineImageName": "vllm/vllm-openai:v0.21.0",
+    "engineType": "vllm",
+    "size": 51644336672,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": true,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 26.0,
+      "hiddenSize": 2816,
+      "numHiddenLayers": 30,
+      "numAttentionHeads": 16,
+      "vocabSize": 262144
+    },
+    "launchConfig": {
+      "volumes": [
+        "/opt/afs-ai-hub/models/gemma-4-26B-A4B-it-assistant:/gemma-4-26B-A4B-it-assistant:ro"
+      ],
+      "boolean": [
+        "trust-remote-code",
+        "enable-prefix-caching",
+        "enable-chunked-prefill",
+        "enable-auto-tool-choice",
+        "enable-log-requests"
+      ],
+      "max-model-len": 32768,
+      "gpu-memory-utilization": 0.9,
+      "kv-cache-dtype": "fp8",
+      "tool-call-parser": "gemma4",
+      "reasoning-parser": "gemma4",
+      "load-format": "safetensors",
+      "max-num-seqs": 4,
+      "max-num-batched-tokens": 8192,
+      "speculative-config": "{\"model\": \"/gemma-4-26B-A4B-it-assistant\", \"num_speculative_tokens\": 4}"
+    },
+    "metadata": {
+      "description": "高效能多模態混合專家模型",
+      "detail": "Google 多模態模型，兼具速度與深度的 MoE(混合專家)架構模型；透過激活 4B 參數的輕快推論成本，提供高達 26B 等級的圖文理解與邏輯推理能力",
+      "publisher": "Google",
+      "downloadUrl": "",
+      "gpuMemoryCalc": false,
+      "extraDownloadFiles": [
+        "gemma-4-26B-A4B-it-assistant"
+      ]
+    }
+  },
+  "gemma-4-31B-it": {
+    "modelType": "gemma",
+    "modelArtifact": "gemma-4-31B-it",
+    "engineImageName": "vllm/vllm-openai:v0.21.0",
+    "engineType": "vllm",
+    "size": 62578682840,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": true,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 31.0,
+      "hiddenSize": 5376,
+      "numHiddenLayers": 60,
+      "numAttentionHeads": 32,
+      "vocabSize": 262144
+    },
+    "launchConfig": {
+      "env": [],
+      "volumes": [
+        "/opt/afs-ai-hub/models/gemma-4-31B-it-assistant:/gemma-4-31B-it-assistant:ro"
+      ],
+      "boolean": [
+        "enable-prefix-caching",
+        "enable-chunked-prefill",
+        "enable-auto-tool-choice",
+        "enable-log-requests"
+      ],
+      "max-model-len": 32768,
+      "gpu-memory-utilization": 0.96,
+      "kv-cache-dtype": "fp8",
+      "tool-call-parser": "gemma4",
+      "reasoning-parser": "gemma4",
+      "load-format": "safetensors",
+      "max-num-seqs": 4,
+      "max-num-batched-tokens": 8192,
+      "speculative-config": "{\"model\": \"/gemma-4-31B-it-assistant\", \"num_speculative_tokens\": 4}"
+    },
+    "metadata": {
+      "description": "高效能稠密型多模態模型",
+      "detail": "Google 多模態模型，專為深度推理、複雜編程與精確視覺分析設計，30B 參數等級具有卓越的表現。",
+      "publisher": "Google",
+      "downloadUrl": "",
+      "gpuMemoryCalc": false,
+      "extraDownloadFiles": [
+        "gemma-4-31B-it-assistant"
+      ]
+    }
+  },
+  "FFM-Embedding-v2.1": {
+    "modelType": "embedding",
+    "modelArtifact": "FFM-Embedding-v2.1",
+    "engineImageName": "vllm/vllm-openai:v0.8.4",
+    "engineType": "vllm",
+    "size": 2489904322,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": false,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 1.24,
+      "hiddenSize": 2048,
+      "numHiddenLayers": 16,
+      "numAttentionHeads": 32,
+      "vocabSize": 128256
+    },
+    "launchConfig": {
+      "task": "embedding"
+    },
+    "metadata": {
+      "subPath": "/model",
+      "requiredMemoryInMiB": 2831
+    }
+  },
+  "llama-nemotron-embed-vl-1b-v2": {
+    "modelType": "embedding",
+    "modelArtifact": "llama-nemotron-embed-vl-1b-v2",
+    "engineImageName": "vllm/vllm-openai:v0.21.0",
+    "engineType": "vllm",
+    "size": 3373983927,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": false,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 1.0,
+      "hiddenSize": 2048,
+      "numHiddenLayers": 16,
+      "numAttentionHeads": 32,
+      "vocabSize": 128266
+    },
+    "launchConfig": {
+      "max-model-len": 10240,
+      "runner": "pooling",
+      "chat-template": "/model/llama-nemotron-embed-vl-1b-v2/nemotron-embed-vl.jinja",
+      "boolean": [
+        "trust-remote-code"
+      ]
+    },
+    "metadata": {
+      "requiredMemoryInMiB": 2831
+    }
+  },
+  "llama-nemotron-rerank-vl-1b-v2": {
+    "modelType": "embedding",
+    "modelArtifact": "llama-nemotron-rerank-vl-1b-v2",
+    "engineImageName": "vllm/vllm-openai:v0.21.0",
+    "engineType": "vllm",
+    "size": 3373997490,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": false,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 1.0,
+      "hiddenSize": 2048,
+      "numHiddenLayers": 16,
+      "numAttentionHeads": 32,
+      "vocabSize": 128267
+    },
+    "launchConfig": {
+      "max-model-len": 10240,
+      "runner": "pooling",
+      "chat-template": "/model/llama-nemotron-rerank-vl-1b-v2/nemotron-vl-rerank.jinja",
+      "boolean": [
+        "trust-remote-code"
+      ]
+    },
+    "metadata": {
+      "requiredMemoryInMiB": 2831
+    }
+  },
+  "llama-embed-nemotron-8b": {
+    "modelType": "embedding",
+    "modelArtifact": "llama-embed-nemotron-8b",
+    "engineImageName": "vllm/vllm-openai:v0.21.0",
+    "engineType": "vllm",
+    "size": 15027190804,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": false,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 8.0,
+      "hiddenSize": 4096,
+      "numHiddenLayers": 32,
+      "numAttentionHeads": 32,
+      "vocabSize": 128256
+    },
+    "launchConfig": {
+      "boolean": [
+        "trust-remote-code"
+      ]
+    },
+    "metadata": {
+      "requiredMemoryInMiB": 2831
+    }
+  }
+}
