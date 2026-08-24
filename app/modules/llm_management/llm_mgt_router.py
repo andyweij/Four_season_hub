@@ -18,7 +18,6 @@ router = APIRouter()
     "/available-models",
     response_model=AvailableModelsResponse,
 )
-@router.get("/available-models")
 async def get_available_models(
         service: ModelCatalogServiceDependency,
 ) -> AvailableModelsResponse:

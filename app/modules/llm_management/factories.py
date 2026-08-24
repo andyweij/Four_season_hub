@@ -11,14 +11,12 @@ from app.modules.llm_management.cache.memory import (
 #     RedisRuntimeStatusCache,
 # )
 from app.modules.llm_management.runtimes.docker import (
-    DockerRuntimeInspector,
+    DockerCompatRuntimeInspector,
 )
 # from app.modules.llm_management.runtimes.native import (
 #     NativeRuntimeInspector,
 # )
-from app.modules.llm_management.runtimes.podman import (
-    PodmanRuntimeInspector,
-)
+
 from pathlib import Path
 
 from app.modules.llm_management.catalog_loader import (
@@ -31,6 +29,9 @@ from app.modules.llm_management.repositories.memory_model_catalog import (
 from app.modules.llm_management.artifacts.local import (
     LocalArtifactInspector,
 )
+
+import platform
+import os
 
 
 def build_runtime_cache(
@@ -59,15 +60,38 @@ def build_runtime_cache(
             )
 
 
+def resolve_base_url(runtime_type: RuntimeType) -> str:
+    system = platform.system()
+
+    if system == "Windows":
+        # Docker Desktop 與 Podman machine 在 Windows 上
+        # 都轉發到同一個 named pipe（已實測驗證過）
+        return "npipe:////./pipe/docker_engine"
+
+    if system == "Darwin":
+        # Docker Desktop / Podman machine for Mac 也各自走 unix socket
+        # 路徑依安裝方式可能不同，通常在 ~/.docker/run/docker.sock
+        # 或 ~/.local/share/containers/podman/machine/podman.sock
+        ...
+
+    # Linux（不需要透過虛擬機，直接連本機 socket）
+    match runtime_type:
+        case RuntimeType.DOCKER:
+            return "unix:///var/run/docker.sock"
+        case RuntimeType.PODMAN:
+            uid = os.getuid()
+            return f"unix:///run/user/{uid}/podman/podman.sock"
+        case _:
+            raise ValueError(f"Unsupported runtime type: {runtime_type}")
+
+
 def build_runtime_inspector(
         settings: Settings,
 ):
     match settings.runtime_type:
-        case RuntimeType.DOCKER:
-            return DockerRuntimeInspector()
-
-        case RuntimeType.PODMAN:
-            return PodmanRuntimeInspector()
+        case RuntimeType.DOCKER | RuntimeType.PODMAN:
+            base_url = resolve_base_url(settings.runtime_type)
+            return DockerCompatRuntimeInspector(base_url)
 
         # case RuntimeType.NATIVE:
         #     return NativeRuntimeInspector()

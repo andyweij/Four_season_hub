@@ -11,3 +11,8 @@ class ModelRuntimeStatus(StrEnum):
     STOPPED = "stopped"
     ERROR = "error"
     UNKNOWN = "unknown"
+
+
+class ComponentType(StrEnum):
+    MODEL = "model"
+    AGENT = "agent"
