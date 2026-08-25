@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from app.modules.llm_management.domain.enums import ComponentType, ModelRuntimeStatus
-from app.modules.llm_management.schemas.model_instance import ManagedInstance
+from app.modules.llm_management.domain.model_instance import ComponentType, ModelRuntimeStatus
+from app.modules.llm_management.domain.model_instance import ModelInstance
 
 
 class RuntimeInspector(Protocol):
@@ -17,5 +17,5 @@ class RuntimeInspector(Protocol):
     def list_hub_containers(
             self,
             component: ComponentType | None = None,
-    ) -> list[ManagedInstance]:
+    ) -> list[ModelInstance]:
         ...

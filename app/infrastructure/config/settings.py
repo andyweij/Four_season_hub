@@ -32,6 +32,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+    model_endpoint_host: str = "localhost"
 
     runtime_type: RuntimeType = RuntimeType.DOCKER
 

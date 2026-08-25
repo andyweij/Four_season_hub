@@ -15,8 +15,8 @@ class ModelCatalogEntry(BaseModel):
         alias="modelType",
     )
 
-    artifact_name: str = Field(
-        alias="modelArtifact",
+    relative_path: str = Field(
+        alias="relativePath",
     )
 
     engine_type: str = Field(

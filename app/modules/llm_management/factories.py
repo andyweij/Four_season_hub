@@ -32,6 +32,7 @@ from app.modules.llm_management.artifacts.local import (
 
 import platform
 import os
+import docker
 
 
 def build_runtime_cache(
@@ -85,22 +86,31 @@ def resolve_base_url(runtime_type: RuntimeType) -> str:
             raise ValueError(f"Unsupported runtime type: {runtime_type}")
 
 
+def build_docker_client(settings: Settings) -> docker.DockerClient | None:
+    if settings.runtime_type not in (RuntimeType.DOCKER, RuntimeType.PODMAN):
+        return None
+
+    base_url = resolve_base_url(settings.runtime_type)
+    return docker.DockerClient(base_url=base_url)
+
+
 def build_runtime_inspector(
         settings: Settings,
+        docker_client: docker.DockerClient | None,
 ):
     match settings.runtime_type:
         case RuntimeType.DOCKER | RuntimeType.PODMAN:
-            base_url = resolve_base_url(settings.runtime_type)
-            return DockerCompatRuntimeInspector(base_url)
+            if docker_client is None:
+                raise RuntimeError(
+                    "docker_client is required for docker/podman runtime"
+                )
+            return DockerCompatRuntimeInspector(docker_client)
 
         # case RuntimeType.NATIVE:
         #     return NativeRuntimeInspector()
 
         case _:
-            raise ValueError(
-                f"Unsupported runtime type: "
-                f"{settings.runtime_type}"
-            )
+            raise ValueError(f"Unsupported runtime type: {settings.runtime_type}")
 
 
 def build_memory_model_catalog(

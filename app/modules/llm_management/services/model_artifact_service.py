@@ -10,22 +10,24 @@ from app.modules.llm_management.domain.artifact import (
 from app.modules.llm_management.repositories.model_catalog import (
     ModelCatalogRepository,
 )
-
+from app.modules.llm_management.domain.model_instance import ModelInstance
 
 logger = logging.getLogger(__name__)
 
 
 class ModelArtifactService:
     def __init__(
-        self,
-        model_catalog: ModelCatalogRepository,
-        artifact_inspector: ArtifactInspector,
+            self,
+            model_catalog: ModelCatalogRepository,
+            artifact_inspector: ArtifactInspector,
+            model_instances: list[ModelInstance],
     ):
         self.model_catalog = model_catalog
         self.artifact_inspector = artifact_inspector
+        self.model_instances = model_instances
 
     async def check_all(
-        self,
+            self,
     ) -> list[ArtifactCheckResult]:
         models = await self.model_catalog.list_all()
 
@@ -45,7 +47,7 @@ class ModelArtifactService:
                     "model=%s size=%s path=%s",
                     result.model_key,
                     result.actual_size,
-                    result.artifact_path,
+                    result.relative_path,
                 )
             else:
                 logger.warning(
@@ -56,7 +58,7 @@ class ModelArtifactService:
                     result.status,
                     result.expected_size,
                     result.actual_size,
-                    result.artifact_path,
+                    result.relative_path,
                 )
 
         return results

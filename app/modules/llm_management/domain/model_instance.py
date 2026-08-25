@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from app.modules.llm_management.domain.enums import ComponentType, ModelRuntimeStatus
 
 
-class ManagedInstance(BaseModel):
+class ModelInstance(BaseModel):
     id: str
     name: str
     component: ComponentType

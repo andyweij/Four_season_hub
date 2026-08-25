@@ -27,7 +27,7 @@ async def get_available_models(
         AvailableModelResponse(
             model_key=model.model_key,
             model_type=model.model_type,
-            artifact_name=model.artifact_name,
+            artifact_name=model.relative_path,
             engine_type=model.engine_type,
             size=model.size,
             max_images=model.max_images,

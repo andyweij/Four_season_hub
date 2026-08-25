@@ -1,7 +1,7 @@
 {
   "Llama3.1-FFM-8B": {
     "modelType": "ffm-llama",
-    "modelArtifact": "Llama3.1-FFM-8B",
+    "relativePath": "Llama3.1-FFM-8B",
     "engineImageName": "vllm/vllm-openai:v0.8.4",
     "engineType": "vllm",
     "size": 16069723737,
@@ -37,7 +37,7 @@
   },
   "Llama3.2-FFM-11B": {
     "modelType": "llama",
-    "modelArtifact": "Llama3.2-FFM-11B",
+    "relativePath": "Llama3.2-FFM-11B",
     "engineImageName": "vllm/vllm-openai:v0.8.4",
     "engineType": "vllm",
     "size": 21351378418,
@@ -71,7 +71,7 @@
   },
   "Llama3.3-FFM-70B": {
     "modelType": "llama",
-    "modelArtifact": "Llama3.3-FFM-70B",
+    "relativePath": "Llama3.3-FFM-70B",
     "engineImageName": "vllm/vllm-openai:v0.8.4",
     "engineType": "vllm",
     "size": 141124851494,
@@ -105,7 +105,7 @@
   },
   "gpt-oss-20b": {
     "modelType": "gpt-oss",
-    "modelArtifact": "gpt-oss-20b",
+    "relativePath": "gpt-oss-20b",
     "engineImageName": "vllm/vllm-openai:v0.11.0",
     "engineType": "vllm",
     "size": 41301465516,
@@ -143,7 +143,7 @@
   },
   "gpt-oss-120b": {
     "modelType": "gpt-oss",
-    "modelArtifact": "gpt-oss-120b",
+    "relativePath": "gpt-oss-120b",
     "engineImageName": "vllm/vllm-openai:v0.11.0",
     "engineType": "vllm",
     "size": 195764040609,
@@ -178,7 +178,7 @@
   },
   "gemma-4-26B-A4B-it": {
     "modelType": "gemma",
-    "modelArtifact": "gemma-4-26B-A4B-it",
+    "relativePath": "gemma-4-26B-A4B-it",
     "engineImageName": "vllm/vllm-openai:v0.21.0",
     "engineType": "vllm",
     "size": 51644336672,
@@ -229,7 +229,7 @@
   },
   "gemma-4-31B-it": {
     "modelType": "gemma",
-    "modelArtifact": "gemma-4-31B-it",
+    "relativePath": "gemma-4-31B-it",
     "engineImageName": "vllm/vllm-openai:v0.21.0",
     "engineType": "vllm",
     "size": 62578682840,
@@ -280,7 +280,7 @@
   },
   "FFM-Embedding-v2.1": {
     "modelType": "embedding",
-    "modelArtifact": "FFM-Embedding-v2.1",
+    "relativePath": "FFM-Embedding-v2.1",
     "engineImageName": "vllm/vllm-openai:v0.8.4",
     "engineType": "vllm",
     "size": 2489904322,
@@ -307,7 +307,7 @@
   },
   "llama-nemotron-embed-vl-1b-v2": {
     "modelType": "embedding",
-    "modelArtifact": "llama-nemotron-embed-vl-1b-v2",
+    "relativePath": "llama-nemotron-embed-vl-1b-v2",
     "engineImageName": "vllm/vllm-openai:v0.21.0",
     "engineType": "vllm",
     "size": 3373983927,
@@ -338,7 +338,7 @@
   },
   "llama-nemotron-rerank-vl-1b-v2": {
     "modelType": "embedding",
-    "modelArtifact": "llama-nemotron-rerank-vl-1b-v2",
+    "relativePath": "llama-nemotron-rerank-vl-1b-v2",
     "engineImageName": "vllm/vllm-openai:v0.21.0",
     "engineType": "vllm",
     "size": 3373997490,
@@ -369,7 +369,7 @@
   },
   "llama-embed-nemotron-8b": {
     "modelType": "embedding",
-    "modelArtifact": "llama-embed-nemotron-8b",
+    "relativePath": "llama-embed-nemotron-8b",
     "engineImageName": "vllm/vllm-openai:v0.21.0",
     "engineType": "vllm",
     "size": 15027190804,
