@@ -8,8 +8,6 @@ class AvailableModelResponse(BaseModel):
 
     model_key: str
     model_type: str
-    artifact_name: str
-    engine_type: str
 
     size: int
     max_images: int
@@ -17,7 +15,8 @@ class AvailableModelResponse(BaseModel):
     is_chat_model: bool
     supports_reasoning: bool
     supports_reasoning_effort: bool
-
+    download_status: str
+    status: str
 
 class AvailableModelsResponse(BaseModel):
     models: list[AvailableModelResponse]

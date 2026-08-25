@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter
 
 from app.modules.llm_management.dependencies import (
-    ModelCatalogServiceDependency,
+    ModelRegistryServiceDependency,
 )
 from app.modules.llm_management.schemas.available_models import (
     AvailableModelResponse,
@@ -19,25 +19,21 @@ router = APIRouter()
     response_model=AvailableModelsResponse,
 )
 async def get_available_models(
-        service: ModelCatalogServiceDependency,
+        registry: ModelRegistryServiceDependency,
 ) -> AvailableModelsResponse:
-    models = await service.list_models()
-
     response_models = [
         AvailableModelResponse(
-            model_key=model.model_key,
-            model_type=model.model_type,
-            artifact_name=model.relative_path,
-            engine_type=model.engine_type,
-            size=model.size,
-            max_images=model.max_images,
-            is_chat_model=model.is_chat_model,
-            supports_reasoning=model.supports_reasoning,
-            supports_reasoning_effort=(
-                model.supports_reasoning_effort
-            ),
+            model_key=model.catalog.model_key,
+            model_type=model.catalog.model_type,
+            size=model.catalog.size,
+            max_images=model.catalog.max_images,
+            is_chat_model=model.catalog.is_chat_model,
+            supports_reasoning=model.catalog.supports_reasoning,
+            supports_reasoning_effort=model.catalog.supports_reasoning_effort,
+            download_status=model.download_status,
+            status=model.instance.status if model.instance is not None else 'unknown',
         )
-        for model in models
+        for model in registry.get_all().values()
     ]
 
     return AvailableModelsResponse(

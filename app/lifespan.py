@@ -54,21 +54,22 @@ async def lifespan(app: FastAPI):
     docker_client = build_docker_client(settings)
     app.state.docker_client = docker_client  # native 模式下這裡會是 None，是刻意設計
 
-    app.state.runtime_inspector = build_runtime_inspector(settings, docker_client)
+    runtime_inspector  = build_runtime_inspector(settings, docker_client)
 
     artifact_service = ModelArtifactService(
         model_catalog=app.state.model_catalog,
         artifact_inspector=artifact_inspector,
-        model_instances=app.state.runtime_inspector.list_hub_containers(ComponentType.MODEL)
+        model_instances=runtime_inspector.list_hub_containers(ComponentType.MODEL)
     )
 
     registry_service = ModelRegistryService(
         model_catalog=app.state.model_catalog,
         artifact_service=artifact_service,
-        runtime_inspector=app.state.runtime_inspector,
+        runtime_inspector=runtime_inspector,
         endpoint_host=settings.model_endpoint_host,
     )
-    app.state.model_registry = await registry_service.build_registry()
+    await registry_service.build_registry()
+    app.state.model_registry_service = registry_service
 
     app.state.event_watcher = None
     if docker_client is not None:
@@ -78,7 +79,7 @@ async def lifespan(app: FastAPI):
 
     logger.info(
         "Model registry initialized with %d models",
-        len(app.state.model_registry),
+        len(registry_service.get_all()),
         # {k: v.model_dump() for k, v in app.state.model_registry.items()},
     )
     yield
