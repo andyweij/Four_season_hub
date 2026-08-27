@@ -13,9 +13,9 @@ from app.modules.llm_management.cache.memory import (
 from app.modules.llm_management.runtimes.docker import (
     DockerCompatRuntimeInspector,
 )
-# from app.modules.llm_management.runtimes.native import (
-#     NativeRuntimeInspector,
-# )
+from app.modules.llm_management.runtimes.windows_native import (
+    WindowsNativeRuntimeInspector,
+)
 
 from pathlib import Path
 
@@ -106,8 +106,10 @@ def build_runtime_inspector(
                 )
             return DockerCompatRuntimeInspector(docker_client)
 
-        # case RuntimeType.NATIVE:
-        #     return NativeRuntimeInspector()
+        case RuntimeType.NATIVE:
+            return WindowsNativeRuntimeInspector(
+                model_base_path=settings.model_base_path,
+            )
 
         case _:
             raise ValueError(f"Unsupported runtime type: {settings.runtime_type}")

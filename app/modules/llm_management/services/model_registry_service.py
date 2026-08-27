@@ -3,6 +3,9 @@ from app.modules.llm_management.domain.managed_model import ManagedModel
 from app.modules.llm_management.repositories.model_catalog import ModelCatalogRepository
 from app.modules.llm_management.runtimes.base import RuntimeInspector
 from app.modules.llm_management.services.model_artifact_service import ModelArtifactService
+import logging
+
+logger = logging.getLogger("app")
 
 
 class ModelRegistryService:
@@ -22,7 +25,7 @@ class ModelRegistryService:
     async def build_registry(self) -> dict[str, ManagedModel]:
         catalog_entries = await self._model_catalog.list_all()
         artifact_results = await self._artifact_service.check_all()
-        instances = await self._runtime_inspector.list_hub_containers()
+        instances = await self._runtime_inspector.list_running_instances()
 
         artifact_by_key = {r.model_key: r for r in artifact_results}
         instance_by_name = {i.name: i for i in instances}

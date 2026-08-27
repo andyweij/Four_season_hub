@@ -11,6 +11,9 @@ from app.modules.llm_management.runtimes.docker_parsing import classify_status, 
 from app.modules.llm_management.runtimes.labels import (
     COMPONENT_LABEL, HUB_OWNER_VALUE, MANAGED_BY_LABEL,
 )
+import logging
+
+logger = logging.getLogger("app")
 
 
 class DockerCompatRuntimeInspector:
@@ -27,7 +30,7 @@ class DockerCompatRuntimeInspector:
             return ModelRuntimeStatus.NOT_INSTALLED
         return classify_status(container)
 
-    async def list_hub_containers(
+    async def list_running_instances(
             self, component: ComponentType | None = None,
     ) -> list[ModelInstance]:
         return await asyncio.to_thread(self._list_hub_containers_sync, component)

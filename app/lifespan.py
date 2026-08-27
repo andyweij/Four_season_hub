@@ -59,7 +59,7 @@ async def lifespan(app: FastAPI):
     artifact_service = ModelArtifactService(
         model_catalog=app.state.model_catalog,
         artifact_inspector=artifact_inspector,
-        model_instances=runtime_inspector.list_hub_containers(ComponentType.MODEL)
+        model_instances=runtime_inspector.list_running_instances(ComponentType.MODEL)
     )
 
     registry_service = ModelRegistryService(
