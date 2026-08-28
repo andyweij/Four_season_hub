@@ -18,6 +18,7 @@ from app.modules.llm_management.services.model_activation_service import ModelAc
 from app.modules.llm_management.services.model_artifact_service import (
     ModelArtifactService,
 )
+from app.modules.llm_management.services.model_health_watcher import ModelHealthWatcher
 from app.modules.llm_management.services.model_registry_service import ModelRegistryService
 from app.modules.llm_management.runtimes.event_watcher import DockerEventWatcher
 import logging
@@ -64,18 +65,20 @@ async def lifespan(app: FastAPI):
         artifact_inspector=artifact_inspector,
         model_instances=await runtime_inspector.list_running_instances(ComponentType.MODEL)
     )
-
+    health_watcher = ModelHealthWatcher()
     registry_service = ModelRegistryService(
         model_catalog=app.state.model_catalog,
         artifact_service=artifact_service,
         runtime_inspector=runtime_inspector,
         endpoint_host=settings.model_endpoint_host,
+        health_watcher=health_watcher,
     )
     await registry_service.build_registry()
     app.state.model_registry_service = registry_service
     activation_service = ModelActivationService(
         model_launcher,
         registry_service,
+        health_watcher,
     )
     app.state.model_activation_service = activation_service
     app.state.event_watcher = None

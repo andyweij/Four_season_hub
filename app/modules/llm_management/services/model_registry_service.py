@@ -3,6 +3,7 @@ from app.modules.llm_management.domain.managed_model import ManagedModel
 from app.modules.llm_management.repositories.model_catalog import ModelCatalogRepository
 from app.modules.llm_management.runtimes.base import RuntimeInspector
 from app.modules.llm_management.services.model_artifact_service import ModelArtifactService
+from app.modules.llm_management.services.model_health_watcher import ModelHealthWatcher
 import logging
 
 logger = logging.getLogger("app")
@@ -15,11 +16,13 @@ class ModelRegistryService:
             artifact_service: ModelArtifactService,
             runtime_inspector: RuntimeInspector,
             endpoint_host: str,
+            health_watcher: ModelHealthWatcher,
     ):
         self._model_catalog = model_catalog
         self._artifact_service = artifact_service
         self._runtime_inspector = runtime_inspector
         self._endpoint_host = endpoint_host
+        self._health_watcher = health_watcher
         self._registry: dict[str, ManagedModel] = {}
 
     async def build_registry(self) -> dict[str, ManagedModel]:
@@ -41,6 +44,14 @@ class ModelRegistryService:
             )
             for entry in catalog_entries
         }
+        for model in self._registry.values():
+            if model.instance is not None and model.instance.status == ModelRuntimeStatus.STARTING:
+                self._health_watcher.watch(
+                    model.catalog.model_name,
+                    model.instance.public_port,
+                    self._update_status,
+                )
+
         return self._registry
 
     async def refresh_instance(self, container_name: str) -> None:
