@@ -18,6 +18,10 @@ class ModelCatalogEntry(BaseModel):
     relative_path: str = Field(
         alias="relativePath",
     )
+    entry_point: str | None = Field(
+        default=None,
+        alias="entryPoint",
+    )
 
     engine_type: str = Field(
         alias="engineType",
@@ -45,6 +49,7 @@ class ModelCatalogEntry(BaseModel):
     )
 
     supports_reasoning_effort: bool = Field(
+        default=False,
         alias="reasoningEffort",
         strict=True,
     )

@@ -14,6 +14,7 @@ HEALTH_CHECK_TIMEOUT_SECONDS = 2.0
 MODEL_PATH_FLAGS = ("-m", "--model")
 NAME_FLAG = "--alias"
 PORT_FLAG = "--port"
+PROCESS_NAME = "llama-server.exe"
 
 
 class WindowsNativeRuntimeInspector:
@@ -55,9 +56,11 @@ class WindowsNativeRuntimeInspector:
     def _find_model_processes_sync(self) -> list[dict]:
         model_base = str(self.model_base_path).lower()
         matches = []
-        for proc in psutil.process_iter(["pid", "cmdline", "status"]):
+        for proc in psutil.process_iter(["pid", "name", "cmdline", "status"]):
             try:
                 info = proc.info
+                if info.get("name") != PROCESS_NAME:
+                    continue
                 cmdline = info.get("cmdline") or []
                 if any(model_base in arg.lower() for arg in cmdline):
                     matches.append(info)

@@ -301,7 +301,7 @@
       "task": "embedding"
     },
     "metadata": {
-      "subPath": "/model",
+      "subPath": "model",
       "requiredMemoryInMiB": 2831
     }
   },
@@ -339,6 +339,7 @@
   "llama-nemotron-rerank-vl-1b-v2": {
     "modelType": "embedding",
     "relativePath": "llama-nemotron-rerank-vl-1b-v2",
+    "entryPoint": "llama-nemotron-rerank-vl-1b-v2",
     "engineImageName": "vllm/vllm-openai:v0.21.0",
     "engineType": "vllm",
     "size": 3373997490,
@@ -370,6 +371,7 @@
   "llama-embed-nemotron-8b": {
     "modelType": "embedding",
     "relativePath": "llama-embed-nemotron-8b",
+    "entryPoint": "llama-embed-nemotron-8b",
     "engineImageName": "vllm/vllm-openai:v0.21.0",
     "engineType": "vllm",
     "size": 15027190804,
