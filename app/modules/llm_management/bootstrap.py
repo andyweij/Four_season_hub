@@ -70,7 +70,7 @@ async def build_llm_management_services(settings: Settings) -> LlmManagementServ
         event_watcher = DockerEventWatcher(docker_client, on_event=registry_service.refresh_instance)
         event_watcher.start(loop=asyncio.get_running_loop())
 
-    return AppServices(
+    return LlmManagementServices(
         model_catalog=model_catalog,
         docker_client=docker_client,
         registry_service=registry_service,
@@ -79,7 +79,7 @@ async def build_llm_management_services(settings: Settings) -> LlmManagementServ
     )
 
 
-async def shutdown_app_services(services: AppServices) -> None:
+async def shutdown_app_services(services: LlmManagementServices) -> None:
     if services.event_watcher is not None:
         services.event_watcher.stop()
     if services.docker_client is not None:
