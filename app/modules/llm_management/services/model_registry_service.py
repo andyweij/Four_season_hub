@@ -4,6 +4,7 @@ from app.modules.llm_management.repositories.model_catalog import ModelCatalogRe
 from app.modules.llm_management.runtimes.base import RuntimeInspector
 from app.modules.llm_management.services.model_artifact_service import ModelArtifactService
 from app.modules.llm_management.services.model_health_watcher import ModelHealthWatcher
+from app.modules.llm_management.domain.enums import ModelRuntimeStatus
 import logging
 
 logger = logging.getLogger("app")
