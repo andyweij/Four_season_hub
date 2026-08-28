@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     llm_engine_path: Path
     model_artifact_check_on_startup: bool = True
     model_artifact_strict_startup: bool = False
+    #模型啟動檢查參數
+    model_health_check_interval_seconds: int = 5
+    model_startup_timeout_seconds: int = 1800  # 30 分鐘
 
     @model_validator(mode="after")
     def validate_backend_settings(self) -> "Settings":

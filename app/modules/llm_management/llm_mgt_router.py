@@ -17,7 +17,10 @@ from app.modules.llm_management.schemas.update_launch_config import UpdateLaunch
 from app.modules.llm_management.schemas.run_model import RunModelRequest, RunModelResponse
 
 logger = logging.getLogger("app")
-router = APIRouter()
+router = APIRouter(
+    prefix="/mgt",
+    tags=["LLM Management"],
+)
 
 
 @router.get(
@@ -38,7 +41,7 @@ async def get_available_models(
     )
 
 
-@router.post("/models/run-model", response_model=RunModelResponse)
+@router.post("/run-model", response_model=RunModelResponse)
 async def run_model_app(
         request: RunModelRequest,
         registry: ModelRegistryServiceDependency,
