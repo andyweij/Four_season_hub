@@ -45,7 +45,7 @@ class ModelArtifactService:
                 logger.info(
                     "Model artifact complete: "
                     "model=%s size=%s path=%s",
-                    result.model_key,
+                    result.model_name,
                     result.actual_size,
                     result.relative_path,
                 )
@@ -54,7 +54,7 @@ class ModelArtifactService:
                     "Model artifact invalid: "
                     "model=%s status=%s "
                     "expected=%s actual=%s path=%s",
-                    result.model_key,
+                    result.model_name,
                     result.status,
                     result.expected_size,
                     result.actual_size,

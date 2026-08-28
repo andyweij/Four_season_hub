@@ -67,7 +67,8 @@
       ]
     },
     "metadata": {
-      "subPath": "qwen2.5-coder-7b-instruct-q4_k_m"
+      "subPath": "qwen2.5-coder-7b-instruct-q4_k_m",
+      "requiredMemoryInMiB": 2831
     }
   }
 }

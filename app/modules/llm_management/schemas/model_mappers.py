@@ -5,7 +5,7 @@ from app.modules.llm_management.schemas.available_models import AvailableModelRe
 
 def to_available_model_response(model: ManagedModel) -> AvailableModelResponse:
     return AvailableModelResponse(
-        model_key=model.catalog.model_key,
+        model_name=model.catalog.model_name,
         model_type=model.catalog.model_type,
         size=model.catalog.size,
         max_images=model.catalog.max_images,

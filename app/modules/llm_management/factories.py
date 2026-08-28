@@ -13,6 +13,8 @@ from app.modules.llm_management.cache.memory import (
 from app.modules.llm_management.runtimes.docker import (
     DockerCompatRuntimeInspector,
 )
+from app.modules.llm_management.runtimes.docker_launcher import DockerModelLauncher
+from app.modules.llm_management.runtimes.native_launcher import NativeModelLauncher
 from app.modules.llm_management.runtimes.windows_native import (
     WindowsNativeRuntimeInspector,
 )
@@ -158,3 +160,22 @@ def build_artifact_inspector(
     return LocalArtifactInspector(
         model_base_path=settings.model_base_path
     )
+
+
+def build_docker_launcher(
+        settings: Settings,
+        docker_client: docker.DockerClient | None,
+):
+    match settings.runtime_type:
+        case RuntimeType.DOCKER | RuntimeType.PODMAN:
+            if docker_client is None:
+                raise RuntimeError(
+                    "docker_client is required for docker/podman runtime"
+                )
+            return DockerModelLauncher(docker_client)
+
+        case RuntimeType.NATIVE:
+            return NativeModelLauncher(
+                settings.model_base_path,
+                settings.llm_engine_path
+            )

@@ -14,7 +14,7 @@ class ArtifactStatus(StrEnum):
 
 
 class ArtifactCheckResult(BaseModel):
-    model_key: str
+    model_name: str
     relative_path: Path
 
     status: ArtifactStatus

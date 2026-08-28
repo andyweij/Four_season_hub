@@ -15,8 +15,8 @@ def load_catalog_file(
 
     return [
         ModelCatalogEntry(
-            model_key=model_key,
+            model_name=model_name,
             **model_data,
         )
-        for model_key, model_data in raw_catalog.items()
+        for model_name, model_data in raw_catalog.items()
     ]

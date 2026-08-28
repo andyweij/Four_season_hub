@@ -6,9 +6,9 @@ from app.modules.llm_management.domain.models import (
 
 
 class ModelCatalogRepository(Protocol):
-    async def get_by_key(
+    async def get_by_name  (
         self,
-        model_key: str,
+        model_name: str,
     ) -> ModelCatalogEntry | None:
         ...
 

@@ -11,7 +11,10 @@ from app.modules.llm_management.factories import (
     build_runtime_inspector,
     build_artifact_inspector,
     build_docker_client,
+    build_docker_launcher
 )
+from app.modules.llm_management.services import model_activation_service
+from app.modules.llm_management.services.model_activation_service import ModelActivationService
 from app.modules.llm_management.services.model_artifact_service import (
     ModelArtifactService,
 )
@@ -54,12 +57,12 @@ async def lifespan(app: FastAPI):
     docker_client = build_docker_client(settings)
     app.state.docker_client = docker_client  # native 模式下這裡會是 None，是刻意設計
 
-    runtime_inspector  = build_runtime_inspector(settings, docker_client)
-
+    runtime_inspector = build_runtime_inspector(settings, docker_client)
+    model_launcher = build_docker_launcher(settings, docker_client)
     artifact_service = ModelArtifactService(
         model_catalog=app.state.model_catalog,
         artifact_inspector=artifact_inspector,
-        model_instances=runtime_inspector.list_running_instances(ComponentType.MODEL)
+        model_instances=await runtime_inspector.list_running_instances(ComponentType.MODEL)
     )
 
     registry_service = ModelRegistryService(
@@ -70,7 +73,11 @@ async def lifespan(app: FastAPI):
     )
     await registry_service.build_registry()
     app.state.model_registry_service = registry_service
-
+    activation_service = ModelActivationService(
+        model_launcher,
+        registry_service,
+    )
+    app.state.model_activation_service = activation_service
     app.state.event_watcher = None
     if docker_client is not None:
         watcher = DockerEventWatcher(docker_client, on_event=registry_service.refresh_instance)
@@ -82,6 +89,7 @@ async def lifespan(app: FastAPI):
         len(registry_service.get_all()),
         # {k: v.model_dump() for k, v in app.state.model_registry.items()},
     )
+
     yield
 
     if app.state.event_watcher is not None:

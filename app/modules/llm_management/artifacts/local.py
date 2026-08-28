@@ -41,7 +41,7 @@ class LocalArtifactInspector:
 
         except ValueError as error:
             return ArtifactCheckResult(
-                model_key=model.model_key,
+                model_name=model.model_name,
                 relative_path=self.model_base_path,
                 status=ArtifactStatus.INVALID_PATH,
                 expected_size=model.size,
@@ -51,7 +51,7 @@ class LocalArtifactInspector:
 
         if not artifact_path.exists():
             return ArtifactCheckResult(
-                model_key=model.model_key,
+                model_name=model.model_name,
                 relative_path=artifact_path,
                 status=ArtifactStatus.MISSING,
                 expected_size=model.size,
@@ -66,7 +66,7 @@ class LocalArtifactInspector:
 
         except OSError as error:
             return ArtifactCheckResult(
-                model_key=model.model_key,
+                model_name=model.model_name,
                 relative_path=artifact_path,
                 status=ArtifactStatus.ERROR,
                 expected_size=model.size,
@@ -81,7 +81,7 @@ class LocalArtifactInspector:
             status = ArtifactStatus.SIZE_MISMATCH
 
         return ArtifactCheckResult(
-            model_key=model.model_key,
+            model_name=model.model_name,
             relative_path=artifact_path,
             status=status,
             expected_size=model.size,

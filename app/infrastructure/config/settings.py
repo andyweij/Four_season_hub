@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     runtime_check_interval_seconds: int = 10
     runtime_cache_ttl_seconds: int = 15
     model_base_path: Path
+    llm_engine_path: Path
     model_artifact_check_on_startup: bool = True
     model_artifact_strict_startup: bool = False
 

@@ -27,16 +27,17 @@ class ModelRegistryService:
         artifact_results = await self._artifact_service.check_all()
         instances = await self._runtime_inspector.list_running_instances()
 
-        artifact_by_key = {r.model_key: r for r in artifact_results}
+        artifact_by_key = {r.model_name: r for r in artifact_results}
         instance_by_name = {i.name: i for i in instances}
 
         self._registry = {
-            entry.model_key: ManagedModel(
+            entry.model_name: ManagedModel(
                 catalog=entry,
-                download_status=artifact_by_key[entry.model_key].status
-                if entry.model_key in artifact_by_key else ArtifactStatus.MISSING,
-                instance=instance_by_name.get(entry.model_key),
+                download_status=artifact_by_key[entry.model_name].status
+                if entry.model_name in artifact_by_key else ArtifactStatus.MISSING,
+                instance=instance_by_name.get(entry.model_name),
                 endpoint_host=self._endpoint_host,
+                effective_launch_config=dict(entry.launch_config),  # 注意：dict(...) 複製一份
             )
             for entry in catalog_entries
         }
@@ -49,8 +50,8 @@ class ModelRegistryService:
             return
         model.instance = await self._runtime_inspector.get_instance(container_name)
 
-    def get(self, model_key: str) -> ManagedModel | None:
-        return self._registry.get(model_key)
+    def get(self, model_name: str) -> ManagedModel | None:
+        return self._registry.get(model_name)
 
     def get_all(self) -> dict[str, ManagedModel]:
         return self._registry

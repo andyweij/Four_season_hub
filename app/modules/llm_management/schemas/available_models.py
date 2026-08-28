@@ -6,7 +6,7 @@ class AvailableModelResponse(BaseModel):
         extra="forbid",
     )
 
-    model_key: str
+    model_name: str
     model_type: str
 
     size: int

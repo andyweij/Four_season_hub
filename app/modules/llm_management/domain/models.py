@@ -9,7 +9,7 @@ class ModelCatalogEntry(BaseModel):
         populate_by_name=True,
     )
 
-    model_key: str
+    model_name: str
 
     model_type: str = Field(
         alias="modelType",

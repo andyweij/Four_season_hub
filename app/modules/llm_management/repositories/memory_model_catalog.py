@@ -11,15 +11,15 @@ class InMemoryModelCatalog:
         entries: Iterable[ModelCatalogEntry],
     ):
         self._entries = {
-            entry.model_key: entry
+            entry.model_name: entry
             for entry in entries
         }
 
-    async def get_by_key(
+    async def get_by_name(
         self,
-        model_key: str,
+        model_name: str,
     ) -> ModelCatalogEntry | None:
-        return self._entries.get(model_key)
+        return self._entries.get(model_name)
 
     async def list_all(
         self,
