@@ -63,6 +63,7 @@ async def build_llm_management_services(settings: Settings) -> LlmManagementServ
         registry_service=registry_service,
         health_watcher=health_watcher,
         endpoint_host=settings.model_endpoint_host,
+        runtime_inspector=runtime_inspector,
     )
 
     event_watcher = None

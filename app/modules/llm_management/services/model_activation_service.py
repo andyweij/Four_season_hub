@@ -1,4 +1,6 @@
 import socket
+
+from app.modules.llm_management.runtimes.base import RuntimeInspector
 from app.modules.llm_management.runtimes.launcher_base import ModelLauncher
 from app.modules.llm_management.services.model_registry_service import ModelRegistryService
 from app.modules.llm_management.domain.models import (
@@ -19,6 +21,7 @@ class ModelActivationService:
             self,
             launcher: ModelLauncher,
             registry_service: ModelRegistryService,
+            runtime_inspector: RuntimeInspector,
             health_watcher: ModelHealthWatcher,
             endpoint_host: str = "127.0.0.1",
             port_range: tuple[int, int] = (8000, 8030),
@@ -29,12 +32,17 @@ class ModelActivationService:
         self._port_range = port_range
         self._health_watcher = health_watcher
         self._background_tasks: set[asyncio.Task] = set()  # 防止 task 被 GC 掉的關鍵
+        self.runtime_inspector = runtime_inspector
 
     async def run_model(self, catalog: ModelCatalogEntry, effective_config: dict) -> ModelInstance:
         port = self._allocate_port()
         instance = await self._launcher.launch(catalog, effective_config, port)
         self._health_watcher.watch(catalog.model_name, port, self._update_status)
         return instance  # 立刻回傳 STARTING，不等健康檢查跑完
+
+    async def disable_model(self, instance: ModelInstance) -> None:
+        await self.runtime_inspector.stop_and_remove_instance(instance.id)
+        self._update_status(instance.name, ModelRuntimeStatus.STOPPED)
 
     """
     檢查指定的 port 是否可用，若可用則回傳該 port，否則在指定的 port 範圍內尋找第一個可用的 port。若整個範圍都沒有可用的 port，則拋出 PortAllocationError。

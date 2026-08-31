@@ -11,8 +11,4 @@ class RuntimeInspector(Protocol):
 
     async def get_instance(self, container_name: str) -> ModelInstance | None: ...
 
-    async def inspect(
-            self,
-            model_status: str,
-    ) -> ModelRuntimeStatus:
-        ...
+    async def stop_and_remove_instance(self, container_name: str) -> None: ...

@@ -1,4 +1,3 @@
-# runtimes/launcher_base.py
 from typing import Protocol
 
 from app.modules.llm_management.domain.models import ModelCatalogEntry

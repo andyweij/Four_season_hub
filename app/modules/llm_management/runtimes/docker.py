@@ -35,6 +35,9 @@ class DockerCompatRuntimeInspector:
     ) -> list[ModelInstance]:
         return await asyncio.to_thread(self._list_hub_containers_sync, component)
 
+    async def stop_and_remove_instance(self, container_name: str) -> None:
+        ...
+
     def _list_hub_containers_sync(self, component: ComponentType | None = None) -> list[ModelInstance]:
         label_filters = [f"{MANAGED_BY_LABEL}={HUB_OWNER_VALUE}"]
         if component is not None:

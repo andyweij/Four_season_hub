@@ -47,11 +47,13 @@ class WindowsNativeRuntimeInspector:
                 return await self._build_instance(info)
         return None
 
-    async def inspect(
-            self,
-            model_status: str,
-    ) -> ModelRuntimeStatus:
-        ...
+    async def stop_and_remove_instance(self, instance_id: str) -> None:
+        try:
+            proc = psutil.Process(int(instance_id))
+            proc.terminate()
+            proc.wait(timeout=5)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            logger.warning(f"Failed to terminate process {instance_id}. It may have already exited.")
 
     def _find_model_processes_sync(self) -> list[dict]:
         model_base = str(self.model_base_path).lower()

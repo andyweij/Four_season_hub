@@ -51,7 +51,9 @@ class NativeModelLauncher:
             cmdline,
             stdout=log_file,
             stderr=subprocess.STDOUT,
+            stdin=subprocess.DEVNULL,  # 建議一併加上，理由見下
             cwd=str(self.model_engine_path),
+            creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP,
         )
 
         return ModelInstance(

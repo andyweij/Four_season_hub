@@ -93,3 +93,17 @@ async def update_launch_config(
     model.effective_launch_config.update(request.config_overrides)
 
     return {"model_name": request.model_name, "effective_launch_config": model.effective_launch_config}
+
+
+@router.delete("/disable-model/{model_name}")
+async def disable_model(model_name: str, registry: ModelRegistryServiceDependency,
+                        activation: ModelActivationServiceDependency):
+    model = registry.get(model_name)
+    if model is None:
+        raise HTTPException(status_code=404, detail=f"Unknown model_name: {model_name}")
+    logger.info("Model %s disabled and instance %s stopped", model_name, model.instance.id)
+    if model.instance is not None:
+        await activation.disable_model(model.instance)
+        model.instance = None
+
+    return {"model_name": model_name, "status": "disabled"}
