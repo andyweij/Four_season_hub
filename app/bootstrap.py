@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from app.modules.llm_management.bootstrap import build_llm_management_services, LlmManagementServices
+from app.modules.llm_management.bootstrap import build_llm_management_services, LlmManagementServices, \
+    shutdown_llm_management
 
 from app.infrastructure.config.settings import Settings
 
@@ -16,3 +17,7 @@ async def build_app_services(settings: Settings) -> AppServices:
     return AppServices(
         llm_management=llm_management,
     )
+
+
+async def shutdown_app_services(services: AppServices) -> None:
+    await shutdown_llm_management(services.llm_management)

@@ -79,7 +79,7 @@ async def build_llm_management_services(settings: Settings) -> LlmManagementServ
     )
 
 
-async def shutdown_app_services(services: LlmManagementServices) -> None:
+async def shutdown_llm_management(services: LlmManagementServices) -> None:
     if services.event_watcher is not None:
         services.event_watcher.stop()
     if services.docker_client is not None:
