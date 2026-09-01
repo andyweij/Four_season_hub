@@ -19,16 +19,22 @@
       "vocabSize": 128256
     },
     "launchConfig": {
-      "dtype": "half",
-      "max-model-len": 4096,
-      "gpu-memory-utilization": 0.8,
-      "max-num-seqs": 1,
-      "tool-call-parser": "llama3_json",
-      "boolean": [
-        "disable-mm-preprocessor-cache",
-        "disable-log-requests",
-        "enable-auto-tool-choice"
-      ],
+      "args": {
+        "dtype": "half",
+        "max-model-len": 4096,
+        "gpu-memory-utilization": 0.8,
+        "max-num-seqs": 1,
+        "tool-call-parser": "llama3_json",
+        "boolean": [
+          "disable-mm-preprocessor-cache",
+          "disable-log-requests",
+          "enable-auto-tool-choice"
+        ]
+      },
+      "container": {
+        "volumes": [
+        ]
+      },
       "env": [
         "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
       ]
@@ -55,14 +61,20 @@
       "vocabSize": 128256
     },
     "launchConfig": {
-      "dtype": "half",
-      "max-model-len": 8192,
-      "gpu-memory-utilization": 0.8,
-      "max-num-seqs": 1,
-      "boolean": [
-        "disable-mm-preprocessor-cache",
-        "disable-log-requests"
-      ],
+      "args": {
+        "dtype": "half",
+        "max-model-len": 8192,
+        "gpu-memory-utilization": 0.8,
+        "max-num-seqs": 1,
+        "boolean": [
+          "disable-mm-preprocessor-cache",
+          "disable-log-requests"
+        ]
+      },
+      "container": {
+        "volumes": [
+        ]
+      },
       "env": [
         "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
       ]
@@ -89,17 +101,23 @@
       "vocabSize": 128256
     },
     "launchConfig": {
-      "dtype": "half",
-      "max-model-len": 8192,
-      "gpu-memory-utilization": 0.6,
-      "max-num-seqs": 1,
-      "boolean": [
-        "disable-mm-preprocessor-cache",
-        "disable-log-requests"
-      ],
+      "args": {
+        "dtype": "half",
+        "max-model-len": 8192,
+        "gpu-memory-utilization": 0.6,
+        "max-num-seqs": 1,
+        "boolean": [
+          "disable-mm-preprocessor-cache",
+          "disable-log-requests"
+        ]
+      },
       "env": [
         "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
-      ]
+      ],
+      "container": {
+        "volumes": [
+        ]
+      }
     },
     "metadata": {}
   },
@@ -123,21 +141,27 @@
       "vocabSize": 201088
     },
     "launchConfig": {
-      "max-model-len": 131072,
-      "max-num-batched-tokens": 32768,
-      "gpu-memory-utilization": 0.92,
-      "max-num-seqs": 1,
-      "reasoning-parser": "openai_gptoss",
-      "tool-call-parser": "openai",
-      "boolean": [
-        "trust-remote-code",
-        "disable-mm-preprocessor-cache",
-        "enable-log-requests",
-        "enable-auto-tool-choice"
-      ],
+      "args": {
+        "max-model-len": 131072,
+        "max-num-batched-tokens": 32768,
+        "gpu-memory-utilization": 0.92,
+        "max-num-seqs": 1,
+        "reasoning-parser": "openai_gptoss",
+        "tool-call-parser": "openai",
+        "boolean": [
+          "trust-remote-code",
+          "disable-mm-preprocessor-cache",
+          "enable-log-requests",
+          "enable-auto-tool-choice"
+        ]
+      },
       "env": [
         "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
-      ]
+      ],
+      "container": {
+        "volumes": [
+        ]
+      }
     },
     "metadata": {}
   },
@@ -161,18 +185,24 @@
       "vocabSize": 201088
     },
     "launchConfig": {
-      "max-model-len": 131072,
-      "max-num-batched-tokens": 32768,
-      "gpu-memory-utilization": 0.8,
-      "max-num-seqs": 1,
-      "boolean": [
-        "trust-remote-code",
-        "disable-mm-preprocessor-cache",
-        "enable-log-requests"
-      ],
-      "env": [
-        "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
-      ]
+      "args": {
+        "max-model-len": 131072,
+        "max-num-batched-tokens": 32768,
+        "gpu-memory-utilization": 0.8,
+        "max-num-seqs": 1,
+        "boolean": [
+          "trust-remote-code",
+          "disable-mm-preprocessor-cache",
+          "enable-log-requests"
+        ],
+        "env": [
+          "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
+        ],
+        "container": {
+          "volumes": [
+          ]
+        }
+      }
     },
     "metadata": {}
   },
@@ -196,25 +226,34 @@
       "vocabSize": 262144
     },
     "launchConfig": {
-      "volumes": [
-        "/opt/afs-ai-hub/models/gemma-4-26B-A4B-it-assistant:/gemma-4-26B-A4B-it-assistant:ro"
-      ],
-      "boolean": [
-        "trust-remote-code",
-        "enable-prefix-caching",
-        "enable-chunked-prefill",
-        "enable-auto-tool-choice",
-        "enable-log-requests"
-      ],
-      "max-model-len": 32768,
-      "gpu-memory-utilization": 0.9,
-      "kv-cache-dtype": "fp8",
-      "tool-call-parser": "gemma4",
-      "reasoning-parser": "gemma4",
-      "load-format": "safetensors",
-      "max-num-seqs": 4,
-      "max-num-batched-tokens": 8192,
-      "speculative-config": "{\"model\": \"/gemma-4-26B-A4B-it-assistant\", \"num_speculative_tokens\": 4}"
+      "env": [],
+      "container": {
+        "volumes": [
+          {
+            "host": "/opt/afs-ai-hub/models/gemma-4-26B-A4B-it-assistant",
+            "container": "/gemma-4-26B-A4B-it-assistant",
+            "mode": "ro"
+          }
+        ]
+      },
+      "args": {
+        "max-model-len": 32768,
+        "gpu-memory-utilization": 0.9,
+        "kv-cache-dtype": "fp8",
+        "tool-call-parser": "gemma4",
+        "reasoning-parser": "gemma4",
+        "load-format": "safetensors",
+        "max-num-seqs": 4,
+        "max-num-batched-tokens": 8192,
+        "speculative-config": "{\"model\": \"/gemma-4-26B-A4B-it-assistant\", \"num_speculative_tokens\": 4}",
+        "boolean": [
+          "trust-remote-code",
+          "enable-prefix-caching",
+          "enable-chunked-prefill",
+          "enable-auto-tool-choice",
+          "enable-log-requests"
+        ]
+      }
     },
     "metadata": {
       "description": "高效能多模態混合專家模型",
@@ -247,25 +286,33 @@
       "vocabSize": 262144
     },
     "launchConfig": {
+      "args": {
+        "boolean": [
+          "enable-prefix-caching",
+          "enable-chunked-prefill",
+          "enable-auto-tool-choice",
+          "enable-log-requests"
+        ],
+        "max-model-len": 32768,
+        "gpu-memory-utilization": 0.96,
+        "kv-cache-dtype": "fp8",
+        "tool-call-parser": "gemma4",
+        "reasoning-parser": "gemma4",
+        "load-format": "safetensors",
+        "max-num-seqs": 4,
+        "max-num-batched-tokens": 8192,
+        "speculative-config": "{\"model\": \"/gemma-4-31B-it-assistant\", \"num_speculative_tokens\": 4}"
+      },
       "env": [],
-      "volumes": [
-        "/opt/afs-ai-hub/models/gemma-4-31B-it-assistant:/gemma-4-31B-it-assistant:ro"
-      ],
-      "boolean": [
-        "enable-prefix-caching",
-        "enable-chunked-prefill",
-        "enable-auto-tool-choice",
-        "enable-log-requests"
-      ],
-      "max-model-len": 32768,
-      "gpu-memory-utilization": 0.96,
-      "kv-cache-dtype": "fp8",
-      "tool-call-parser": "gemma4",
-      "reasoning-parser": "gemma4",
-      "load-format": "safetensors",
-      "max-num-seqs": 4,
-      "max-num-batched-tokens": 8192,
-      "speculative-config": "{\"model\": \"/gemma-4-31B-it-assistant\", \"num_speculative_tokens\": 4}"
+      "container": {
+        "volumes": [
+          {
+            "host": "/opt/afs-ai-hub/models/gemma-4-31B-it-assistant",
+            "container": "/gemma-4-31B-it-assistant",
+            "mode": "ro"
+          }
+        ]
+      }
     },
     "metadata": {
       "description": "高效能稠密型多模態模型",
@@ -325,11 +372,19 @@
       "vocabSize": 128266
     },
     "launchConfig": {
-      "max-model-len": 10240,
-      "runner": "pooling",
-      "chat-template": "/model/llama-nemotron-embed-vl-1b-v2/nemotron-embed-vl.jinja",
-      "boolean": [
-        "trust-remote-code"
+      "args": {
+        "max-model-len": 10240,
+        "runner": "pooling",
+        "chat-template": "/model/llama-nemotron-embed-vl-1b-v2/nemotron-embed-vl.jinja",
+        "boolean": [
+          "trust-remote-code"
+        ]
+      },
+      "container": {
+        "volumes": [
+        ]
+      },
+      "env": [
       ]
     },
     "metadata": {
@@ -357,11 +412,19 @@
       "vocabSize": 128267
     },
     "launchConfig": {
-      "max-model-len": 10240,
-      "runner": "pooling",
-      "chat-template": "/model/llama-nemotron-rerank-vl-1b-v2/nemotron-vl-rerank.jinja",
-      "boolean": [
-        "trust-remote-code"
+      "args": {
+        "max-model-len": 10240,
+        "runner": "pooling",
+        "chat-template": "/model/llama-nemotron-rerank-vl-1b-v2/nemotron-vl-rerank.jinja",
+        "boolean": [
+          "trust-remote-code"
+        ]
+      },
+      "container": {
+        "volumes": [
+        ]
+      },
+      "env": [
       ]
     },
     "metadata": {
@@ -389,8 +452,19 @@
       "vocabSize": 128256
     },
     "launchConfig": {
-      "boolean": [
-        "trust-remote-code"
+      "args": {
+        "max-model-len": 10240,
+        "runner": "pooling",
+        "chat-template": "/model/llama-embed-nemotron-8b/nemotron-embed.jinja",
+        "boolean": [
+          "trust-remote-code"
+        ]
+      },
+      "container": {
+        "volumes": [
+        ]
+      },
+      "env": [
       ]
     },
     "metadata": {

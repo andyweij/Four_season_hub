@@ -1,7 +1,7 @@
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
-
+from app.modules.llm_management.domain.launch_config import LaunchConfig
 
 class ModelCatalogEntry(BaseModel):
     model_config = ConfigDict(
@@ -63,9 +63,7 @@ class ModelCatalogEntry(BaseModel):
         alias="modelConfig",
     )
 
-    launch_config: dict[str, Any] = Field(
-        alias="launchConfig",
-    )
+    launch_config: LaunchConfig = Field(alias="launchConfig")
 
     metadata: dict[str, Any] = Field(
         default_factory=dict,

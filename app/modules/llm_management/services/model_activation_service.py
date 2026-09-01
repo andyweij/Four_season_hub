@@ -12,6 +12,7 @@ import logging
 from app.modules.llm_management.domain.enums import ModelRuntimeStatus
 from app.modules.llm_management.exceptions import PortAllocationError
 from app.modules.llm_management.services.model_health_watcher import ModelHealthWatcher
+from app.modules.llm_management.domain.launch_config import LaunchConfig
 
 logger = logging.getLogger("app")
 
@@ -34,15 +35,15 @@ class ModelActivationService:
         self._background_tasks: set[asyncio.Task] = set()  # 防止 task 被 GC 掉的關鍵
         self.runtime_inspector = runtime_inspector
 
-    async def run_model(self, catalog: ModelCatalogEntry, effective_config: dict) -> ModelInstance:
+    async def run_model(self, catalog: ModelCatalogEntry, effective_config: LaunchConfig) -> ModelInstance:
         port = self._allocate_port()
         instance = await self._launcher.launch(catalog, effective_config, port)
-        self._health_watcher.watch(catalog.model_name, port, self._update_status)
+        self._health_watcher.watch(catalog.model_name, port, self._registry.update_instance_status)
         return instance  # 立刻回傳 STARTING，不等健康檢查跑完
 
     async def disable_model(self, instance: ModelInstance) -> None:
         await self.runtime_inspector.stop_and_remove_instance(instance.id)
-        self._update_status(instance.name, ModelRuntimeStatus.STOPPED)
+        self._registry.update_instance_status(instance.name, ModelRuntimeStatus.STOPPED)
 
     """
     檢查指定的 port 是否可用，若可用則回傳該 port，否則在指定的 port 範圍內尋找第一個可用的 port。若整個範圍都沒有可用的 port，則拋出 PortAllocationError。
@@ -54,11 +55,6 @@ class ModelActivationService:
             if self._is_port_free(port):
                 return port
         raise PortAllocationError(f"No free port in range {start}-{end}")
-
-    def _update_status(self, model_name: str, status: ModelRuntimeStatus) -> None:
-        model = self._registry.get(model_name)
-        if model is not None and model.instance is not None:
-            model.instance.status = status
 
     @staticmethod
     def _is_port_free(port: int, host: str = "127.0.0.1") -> bool:
