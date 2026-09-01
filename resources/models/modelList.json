@@ -19,16 +19,20 @@
       "vocab_size": 0
     },
     "launchConfig": {
-      "n-predict": "5000",
-      "ctx-size": "7000",
-      "main-gpu": "0",
-      "n-gpu-layers": "100",
-      "flash-attn": "on",
-      "reasoning-budget": "0",
-      "boolean": [
-        "metrics",
-        "jinja",
-        "no-mmap"
+      "args": {
+        "n-predict": "5000",
+        "ctx-size": "7000",
+        "main-gpu": "0",
+        "n-gpu-layers": "100",
+        "flash-attn": "on",
+        "reasoning-budget": "0",
+        "boolean": [
+          "metrics",
+          "jinja",
+          "no-mmap"
+        ]
+      },
+      "env": [
       ]
     }
   },
@@ -52,18 +56,22 @@
       "vocab_size": 152064
     },
     "launchConfig": {
-      "n-predict": "-1",
-      "ctx-size": "4096",
-      "main-gpu": "0",
-      "n-gpu-layers": "99",
-      "flash-attn": "on",
-      "reasoning-budget": "0",
-      "pooling": "mean",
-      "boolean": [
-        "metrics",
-        "embedding",
-        "jinja",
-        "no-mmap"
+      "args": {
+        "n-predict": "-1",
+        "ctx-size": "4096",
+        "main-gpu": "0",
+        "n-gpu-layers": "99",
+        "flash-attn": "on",
+        "reasoning-budget": "0",
+        "pooling": "mean",
+        "boolean": [
+          "metrics",
+          "embedding",
+          "jinja",
+          "no-mmap"
+        ]
+      },
+      "env": [
       ]
     },
     "metadata": {

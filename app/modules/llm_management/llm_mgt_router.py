@@ -1,4 +1,3 @@
-import json
 import logging
 
 from fastapi import APIRouter, HTTPException
@@ -18,15 +17,12 @@ from app.modules.llm_management.schemas.run_model import RunModelRequest, RunMod
 
 logger = logging.getLogger("app")
 router = APIRouter(
-    prefix="/mgt",
+    prefix="/mgt/models",
     tags=["LLM Management"],
 )
 
 
-@router.get(
-    "/available-models",
-    response_model=AvailableModelsResponse,
-)
+@router.get("", response_model=AvailableModelsResponse, )
 async def get_available_models(
         registry: ModelRegistryServiceDependency,
 ) -> AvailableModelsResponse:
@@ -41,7 +37,7 @@ async def get_available_models(
     )
 
 
-@router.post("/run-model", response_model=RunModelResponse)
+@router.post("/run", response_model=RunModelResponse)
 async def run_model_app(
         request: RunModelRequest,
         registry: ModelRegistryServiceDependency,
@@ -77,7 +73,7 @@ async def run_model_app(
 ALLOWED_OVERRIDE_KEYS = {"max-model-len", "gpu-memory-utilization", "max-num-seqs", ...}
 
 
-@router.patch("/models/launch-config")
+@router.patch("/launch-config")
 async def update_launch_config(
         request: UpdateLaunchConfigRequest,
         registry: ModelRegistryServiceDependency,
@@ -90,7 +86,7 @@ async def update_launch_config(
     if unknown:
         raise HTTPException(status_code=400, detail=f"Unsupported override keys: {unknown}")
 
-    model.effective_launch_config.update(request.config_overrides)
+    model.effective_launch_config.args.update(request.config_overrides)
 
     return {"model_name": request.model_name, "effective_launch_config": model.effective_launch_config}
 
@@ -101,8 +97,8 @@ async def disable_model(model_name: str, registry: ModelRegistryServiceDependenc
     model = registry.get(model_name)
     if model is None:
         raise HTTPException(status_code=404, detail=f"Unknown model_name: {model_name}")
-    logger.info("Model %s disabled and instance %s stopped", model_name, model.instance.id)
     if model.instance is not None:
+        logger.info("Model %s disabled and instance %s stopped", model_name, model.instance.id)
         await activation.disable_model(model.instance)
         model.instance = None
 
