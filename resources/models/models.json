@@ -325,6 +325,45 @@
       ]
     }
   },
+    "Qwen3-4B-Thinking-2507": {
+    "modelType": "qwen",
+    "relativePath": "Qwen3-4B-Thinking-2507",
+    "engineImageName": "vllm/vllm-openai:latest",
+    "engineType": "vllm",
+    "size": 8061073462,
+    "imagesSupport": 0,
+    "reasoning": false,
+    "reasoningEffort": false,
+    "isChatModel": true,
+    "modelConfig": {
+      "precisionBytes": 2,
+      "overheadFactor": 1.08,
+      "totalParametersB": 3.4,
+      "hiddenSize": 2560,
+      "numHiddenLayers": 36,
+      "numAttentionHeads": 32,
+      "vocabSize": 151936
+    },
+    "launchConfig": {
+      "args": {
+        "boolean": [
+          "enable-prefix-caching",
+          "enable-log-requests"
+        ],
+        "max-model-len": 8192,
+        "gpu-memory-utilization": 0.85
+      },
+      "env": [],
+      "container": {
+        "volumes": [
+          {
+            "host": "/opt/afs-ai-hub/models/Qwen3-4B-Thinking-2507",
+            "container": "/Qwen3-4B-Thinking-2507",
+            "mode": "ro"
+          }
+        ]
+      }
+    },
   "FFM-Embedding-v2.1": {
     "modelType": "embedding",
     "relativePath": "FFM-Embedding-v2.1",
@@ -471,4 +510,4 @@
       "requiredMemoryInMiB": 2831
     }
   }
-}
+},
