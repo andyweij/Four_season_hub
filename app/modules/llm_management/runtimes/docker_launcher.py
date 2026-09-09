@@ -28,6 +28,7 @@ class DockerModelLauncher:
     def _launch_sync(self, catalog: ModelCatalogEntry, effective_config, port) -> ModelInstance:
         # 之後接：組 docker run 參數（image / volumes / labels / env / device_requests）
         engine_image_name = catalog.engine_image_name
+        model_name = catalog.model_name
         if engine_image_name is None:
             raise ValueError(f"{catalog.model_name} 沒有設定 engineImageName，無法以 docker 啟動")
         volumes = (
@@ -36,6 +37,7 @@ class DockerModelLauncher:
             else []
         )
         command = build_config_args(effective_config.args)
+        command.extend(["--served-model-name", model_name])
         logger.info(
             "Launching docker model %s: image=%s command=%s",
             catalog.model_name, engine_image_name, " ".join(command),
