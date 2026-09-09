@@ -101,5 +101,6 @@ async def disable_model(model_name: str, registry: ModelRegistryServiceDependenc
         logger.info("Model %s disabled and instance %s stopped", model_name, model.instance.id)
         await activation.disable_model(model.instance)
         model.instance = None
-
+    else:
+        return {"model_name": model_name, "status": "note exist"}
     return {"model_name": model_name, "status": "disabled"}

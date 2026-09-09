@@ -15,6 +15,7 @@ from app.modules.llm_management.domain.enums import ComponentType, ModelRuntimeS
 logger = logging.getLogger("app")
 
 INTERNAL_PORT = 8000
+CONTAINER_PREFIX = "FSH"
 
 
 class DockerModelLauncher:
@@ -44,7 +45,7 @@ class DockerModelLauncher:
         )
         container = self.client.containers.run(
             image=engine_image_name,
-            name=catalog.model_name,
+            name=CONTAINER_PREFIX + "_" + catalog.model_name,
             command=command,
             environment=parse_env_list(effective_config.env),
             ports={f"{INTERNAL_PORT}/tcp": port},

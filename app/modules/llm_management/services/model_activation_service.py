@@ -42,7 +42,7 @@ class ModelActivationService:
         return instance  # 立刻回傳 STARTING，不等健康檢查跑完
 
     async def disable_model(self, instance: ModelInstance) -> None:
-        await self.runtime_inspector.stop_and_remove_instance(instance.id)
+        await self.runtime_inspector.stop_and_remove_instance(instance.name, instance.id)
         self._registry.update_instance_status(instance.name, ModelRuntimeStatus.STOPPED)
 
     """
@@ -57,7 +57,7 @@ class ModelActivationService:
         raise PortAllocationError(f"No free port in range {start}-{end}")
 
     @staticmethod
-    def _is_port_free(port: int, host: str = "127.0.0.1") -> bool:
+    def _is_port_free(port: int, host: str = "0.0.0.0") -> bool:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
                 s.bind((host, port))
