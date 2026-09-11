@@ -47,6 +47,8 @@ class Settings(BaseSettings):
     cache_backend: CacheBackend = CacheBackend.MEMORY
 
     database_url: SecretStr | None = None
+    postgre_user: SecretStr | None = None
+    postgre_pwd: SecretStr | None = None
     redis_url: SecretStr | None = None
 
     runtime_check_interval_seconds: int = 10
