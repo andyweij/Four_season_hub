@@ -13,11 +13,11 @@ class MessageRepository:
             [("conversation_id", 1), ("sequence", 1)], unique=True
         )
 
-    async def insert(self, message: Message) -> None:
+    async def insert(self, conversation_id: str, user_id, message: Message) -> Message:
         doc = {
             "_id": ObjectId(message.id),
-            "conversation_id": message.conversation_id,
-            "user_id": message.user_id,
+            "conversation_id": conversation_id,
+            "user_id": user_id,
             "sequence": message.sequence,
             "role": message.role,
             "content": [part.model_dump() for part in message.content],
@@ -28,6 +28,7 @@ class MessageRepository:
             "created_at": message.created_at,
         }
         await self._collection.insert_one(doc)
+        return self._to_domain(doc)
 
     async def list_for_conversation(self, conversation_id: str, user_id: str) -> list[Message]:
         cursor = self._collection.find(

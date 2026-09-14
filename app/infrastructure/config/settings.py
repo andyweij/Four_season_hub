@@ -49,18 +49,20 @@ class Settings(BaseSettings):
     database_url: SecretStr | None = None
     postgre_user: SecretStr | None = None
     postgre_pwd: SecretStr | None = None
-    redis_url: SecretStr | None = None
+    # redis_url: SecretStr | None = None
 
     runtime_check_interval_seconds: int = 10
     runtime_cache_ttl_seconds: int = 15
     model_base_path: Path
     llm_engine_path: Path
-    model_artifact_check_on_startup: bool = True
-    model_artifact_strict_startup: bool = False
+    # model_artifact_check_on_startup: bool = True
+    # model_artifact_strict_startup: bool = False
     # 模型啟動檢查參數
     model_health_check_interval_seconds: int = 5
     model_startup_timeout_seconds: int = 1800  # 30 分鐘
-    container_network_name: str = ""
+    container_network_name: str
+    mongo_url: SecretStr
+    mongo_db_name: str
 
     @model_validator(mode="after")
     def validate_backend_settings(self) -> "Settings":

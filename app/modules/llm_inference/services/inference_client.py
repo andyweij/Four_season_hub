@@ -7,6 +7,7 @@ import httpx
 from app.modules.llm_inference.domain.chat_delta import ChatDelta
 from app.modules.llm_inference.exceptions import UpstreamInferenceError
 from app.modules.llm_inference.services.payload_builder import build_chat_payload
+from app.modules.llm_inference.domain.inference_request import InferenceRequest
 
 
 class InferenceClient:
@@ -16,13 +17,9 @@ class InferenceClient:
     async def stream_chat_completion(
             self,
             endpoint: str,
-            model_type: str,
-            model: str,
-            messages: list[dict],
-            parameters: dict,
+            inference_request: InferenceRequest,
     ) -> AsyncIterator[ChatDelta]:
-        payload = build_chat_payload(model_type, model, messages, parameters)
-
+        payload = build_chat_payload(inference_request)
         async with self._http_client.stream(
                 "POST", f"{endpoint}/v1/chat/completions", json=payload, timeout=None,
         ) as response:

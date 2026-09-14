@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel
+from app.modules.chat.domain.enums import MessageRole, MessageStatus
 
 
 class ContentPart(BaseModel):
@@ -14,10 +15,10 @@ class Message(BaseModel):
     conversation_id: str
     user_id: str
     sequence: int
-    role: Literal["user", "assistant", "system"]
+    role: MessageRole
     content: list[ContentPart]
     model: str | None = None
     finish_reason: str | None = None
     usage: dict | None = None
-    status: Literal["complete", "cancelled", "error"] = "complete"
+    status: MessageStatus = MessageStatus.COMPLETE
     created_at: datetime

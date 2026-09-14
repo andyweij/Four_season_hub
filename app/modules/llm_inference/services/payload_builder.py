@@ -1,25 +1,25 @@
 from typing import Callable
-from app.modules.chat.schemas.chat_request import ChatMessage, GenerationParameters
+from app.modules.llm_inference.domain.inference_request import InferenceRequest
 
-PayloadBuilder = Callable[[dict, dict], dict]
+PayloadBuilder = Callable[[dict, InferenceRequest], dict]
 
 
-def build_common_payload(model: str, messages: list[ChatMessage], parameters: GenerationParameters) -> dict:
+def build_common_payload(inference_request: InferenceRequest) -> dict:
     payload = {
-        "model": model,
-        "messages": messages,
-        "temperature": parameters.temperature,
-        "top_p": parameters.top_p,
-        "max_tokens": parameters.max_tokens,
+        "model": inference_request.model,
+        "messages": inference_request.messages,
+        "temperature": inference_request.temperature,
+        "top_p": inference_request.top_p,
+        "max_tokens": inference_request.max_tokens,
         "stream": True,
         "stream_options": {"include_usage": True},
     }
     return payload
 
 
-def _add_reasoning_effort(payload: dict, parameters: dict) -> dict:
-    if parameters.get("reasoning_effort"):
-        payload["reasoning_effort"] = parameters["reasoning_effort"]
+def _add_reasoning_effort(payload: dict, inference_request: InferenceRequest) -> dict:
+    if inference_request.reasoning_effort:
+        payload["reasoning_effort"] = inference_request.reasoning_effort
     return payload
 
 
@@ -28,10 +28,12 @@ _MODEL_TYPE_BUILDERS: dict[str, PayloadBuilder] = {
 }
 
 
-def build_chat_payload(model_type: str, model: str, messages: list[ChatMessage],
-                       parameters: GenerationParameters) -> dict:
-    payload = build_common_payload(model, messages, parameters)
+def build_chat_payload(inference_request: InferenceRequest,
+                       ) -> dict:
+    payload = build_common_payload(inference_request)
+    model_type = inference_request.model_type
+
     extra_builder = _MODEL_TYPE_BUILDERS.get(model_type)
     if extra_builder is not None:
-        payload = extra_builder(payload, parameters)
+        payload = extra_builder(payload, inference_request)
     return payload

@@ -31,11 +31,13 @@ async def build_chat_services(
     await conversation_repository.ensure_indexes()
     await message_repository.ensure_indexes()
 
-    conversation_service = ConversationService(conversation_repository, message_repository)
+    conversation_service = ConversationService(
+        conversation_repository=conversation_repository,
+        message_repository=message_repository
+    )
     chat_stream_service = ChatStreamService(
         registry_service=registry_service,
         conversation_service=conversation_service,
-        message_repository=message_repository,
         inference_client=inference_client,
     )
 

@@ -15,11 +15,11 @@ class ConversationRepository:
     async def ensure_indexes(self) -> None:
         await self._collection.create_index([("user_id", 1), ("updated_at", -1)])
 
-    async def create(self, user_id: str, model: str) -> Conversation:
+    async def create(self, user_id: str, model: str, title: str) -> Conversation:
         now = datetime.now(UTC)
         doc = {
             "user_id": user_id,
-            "title": None,
+            "title": title,
             "model": model,
             "message_seq": 0,
             "created_at": now,

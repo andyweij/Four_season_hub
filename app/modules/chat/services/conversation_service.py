@@ -1,3 +1,68 @@
+from app.modules.chat.repositories.message_repository import MessageRepository
+from app.modules.chat.repositories.conversation_repository import ConversationRepository
+from app.modules.llm_inference.domain.inference_request import InferenceMessage
+from datetime import datetime, UTC
+from app.modules.chat.domain.conversation import Conversation
+from bson import ObjectId
+from app.modules.chat.domain.message import ContentPart, Message
+from app.modules.chat.domain.enums import MessageStatus, MessageRole
+
+
 class ConversationService:
-    def __init__(self):
-        pass
+    def __init__(self, conversation_repository: ConversationRepository,
+                 message_repository: MessageRepository
+                 ):
+        self.conversation_repository = conversation_repository
+        self.message_repository = message_repository
+
+    async def create_conversation(self, user_id: str, model_name: str, inference_message: InferenceMessage,
+                                  title: str = "") -> tuple[Conversation, Message] | None:
+        conversation = await self.conversation_repository.create(user_id, model_name, title)
+
+        if conversation.id != "":
+            message = await self.add_user_message(conversation.id, user_id, inference_message.content)
+            return conversation, message
+
+    async def _record_message(
+            self,
+            conversation_id: str,
+            user_id: str,
+            role: MessageRole,
+            content: str,
+            model: str | None = None,
+            finish_reason: str | None = None,
+            usage: dict | None = None,
+    ) -> Message:
+        sequence = await self.conversation_repository.allocate_sequence(conversation_id, user_id)
+        message = Message(
+            id=str(ObjectId()),
+            conversation_id=conversation_id,
+            user_id=user_id,
+            sequence=sequence,
+            role=role,
+            content=[ContentPart(text=content)],
+            model=model,
+            finish_reason=finish_reason,
+            usage=usage,
+            status=MessageStatus.COMPLETE,
+            created_at=datetime.now(UTC),
+        )
+        await self.message_repository.insert(conversation_id, user_id, message)
+        return message
+
+    async def add_user_message(self, conversation_id: str, user_id: str, content: str) -> Message:
+        return await self._record_message(conversation_id, user_id, MessageRole.USER, content)
+
+    async def add_assistant_message(
+            self,
+            conversation_id: str,
+            user_id: str,
+            content: str,
+            model: str,
+            finish_reason: str | None,
+            usage: dict | None,
+    ) -> Message:
+        return await self._record_message(
+            conversation_id, user_id, MessageRole.ASSISTANT, content,
+            model=model, finish_reason=finish_reason, usage=usage,
+        )
