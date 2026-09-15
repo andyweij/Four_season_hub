@@ -47,7 +47,7 @@ class WindowsNativeRuntimeInspector:
                 return await self._build_instance(info)
         return None
 
-    async def stop_and_remove_instance(self, instance_id: str) -> None:
+    async def stop_and_remove_instance(self, model_name: str, instance_id: str) -> None:
         try:
             proc = psutil.Process(int(instance_id))
             proc.terminate()

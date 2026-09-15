@@ -3,9 +3,16 @@ name = "four-season-hub"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.19.2",
+    "asyncpg>=0.31.0",
     "docker>=7.2.0",
     "fastapi[standard]>=0.141.1",
+    "httpx>=0.28.1",
+    "motor>=3.7.1",
     "psutil>=7.2.2",
     "pydantic-settings>=2.15.0",
+    "pyjwt[crypto]>=2.13.0",
+    "pymupdf>=1.28.2",
     "redis>=8.1.0",
+    "sqlalchemy[asyncio]>=2.0.52",
 ]

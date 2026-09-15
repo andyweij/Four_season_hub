@@ -31,6 +31,7 @@ class ModelHealthWatcher:
 
     async def _watch_loop(self, model_name: str, port: int, on_status_change: StatusCallback) -> None:
         url = f"http://{self._endpoint_host}:{port}/health"
+        logger.info(f"Request url:{url}")
         deadline = time.monotonic() + self._startup_timeout
 
         while time.monotonic() < deadline:

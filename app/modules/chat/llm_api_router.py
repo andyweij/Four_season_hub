@@ -3,19 +3,16 @@ import uuid
 from app.modules.chat.schemas.chat_request import ChatRequest
 from app.modules.chat.schemas import chat_response
 from fastapi import APIRouter
+from app.modules.chat.services.chat_stream_service import ChatStreamService
 import logging
 
-logger = logging.getLogger("app.http")
-
-router = APIRouter()
-
-
-@router.get("/models", response_model=chat_response.GetModelsResponse)
-async def get_models():
-    return chat_response.GetModelsResponse(model_name=["gpt-4", "gpt-3.5-turbo"])
+logger = logging.getLogger("app")
+router = APIRouter(
+    tags=["Chat"],
+)
 
 
-@router.post("/chat", response_model=chat_response.ChatResponse)
+@router.post("/stream/chat", response_model=chat_response.ChatResponse)
 async def chat(request: ChatRequest):
     """
     Chat with the model.
@@ -28,9 +25,9 @@ async def chat(request: ChatRequest):
 
     contents = list(map(lambda msg: msg.content, request.message))
     logger.info("Received message: %s", contents)
-
+    await ChatStreamService.chat_stream(request)
     user_question = request.message[-1].content if request.message else ""
-
+    
     return chat_response.ChatResponse(
         request_id=str(uuid.uuid4()),
         conversation_id=str(uuid.uuid4()),

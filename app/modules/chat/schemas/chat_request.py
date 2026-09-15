@@ -15,5 +15,7 @@ class ChatRequest(BaseModel):
     model: str = Field(min_length=1, max_length=200)
     message: list[ChatMessage] = Field(min_length=1)
     stream: bool = False
+    thinking: bool = False
+    reasoning_effort: bool = False
 
     parameters: GenerationParameters = Field(default_factory=GenerationParameters)

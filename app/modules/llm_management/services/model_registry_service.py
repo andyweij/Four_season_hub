@@ -39,9 +39,9 @@ class ModelRegistryService:
                 catalog=entry,
                 download_status=artifact_by_key[entry.model_name].status
                 if entry.model_name in artifact_by_key else ArtifactStatus.MISSING,
-                instance=instance_by_name.get(entry.model_name),
+                instance=instance_by_name.get("FSH_" + entry.model_name),
                 endpoint_host=self._endpoint_host,
-                effective_launch_config=dict(entry.launch_config),  # 注意：dict(...) 複製一份
+                effective_launch_config=entry.launch_config.model_copy(deep=True),  # Deep Copy，深層複製
             )
             for entry in catalog_entries
         }
@@ -50,7 +50,7 @@ class ModelRegistryService:
                 self._health_watcher.watch(
                     model.catalog.model_name,
                     model.instance.public_port,
-                    self._update_status,
+                    self.update_instance_status
                 )
 
         return self._registry
@@ -67,3 +67,8 @@ class ModelRegistryService:
 
     def get_all(self) -> dict[str, ManagedModel]:
         return self._registry
+
+    def update_instance_status(self, model_name: str, status: ModelRuntimeStatus) -> None:
+        model = self._registry.get(model_name)
+        if model is not None and model.instance is not None:
+            model.instance.status = status

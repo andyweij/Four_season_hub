@@ -15,6 +15,8 @@ import logging
 
 logger = logging.getLogger("app")
 
+CONTAINER_PREFIX = "FSH"
+
 
 class DockerCompatRuntimeInspector:
     def __init__(self, client: docker.DockerClient):
@@ -35,8 +37,27 @@ class DockerCompatRuntimeInspector:
     ) -> list[ModelInstance]:
         return await asyncio.to_thread(self._list_hub_containers_sync, component)
 
-    async def stop_and_remove_instance(self, container_name: str) -> None:
-        ...
+    async def stop_and_remove_instance(self, model_name: str, container_id: str) -> None:
+        if not container_id:
+            return
+        await asyncio.to_thread(self._stop_and_remove_sync, model_name, container_id)
+
+    def _stop_and_remove_sync(self, model_name: str, container_id: str) -> None:
+        try:
+            container = self.client.containers.get(container_id)
+        except NotFound:
+            logger.info("Container %s for model %s already gone, nothing to do", container_id, model_name)
+            return
+
+        try:
+            if container.status == "running":
+                container.stop()
+            container.remove()
+        except NotFound:
+            logger.info("Container %s for model %s disappeared while stopping", container_id, model_name)
+        except docker.errors.APIError:
+            logger.exception("Failed to stop/remove container %s for model %s", container_id, model_name)
+            raise
 
     def _list_hub_containers_sync(self, component: ComponentType | None = None) -> list[ModelInstance]:
         label_filters = [f"{MANAGED_BY_LABEL}={HUB_OWNER_VALUE}"]
