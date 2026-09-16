@@ -82,3 +82,10 @@ class ModelRegistryService:
         if not model.catalog.is_chat_model:
             return False
         return model.instance.status == ModelRuntimeStatus.READY
+
+    def get_all_runnings(self) -> list[str]:
+        running_models = []
+        for model in self._registry.values():
+            if model.instance is not None and model.instance.status == ModelRuntimeStatus.READY:
+                running_models.append(model.catalog.model_name)
+        return running_models

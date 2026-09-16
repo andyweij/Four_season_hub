@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.infrastructure.config.settings import Settings
+from app.modules.chat.services.chat_model_service import ChatModelService
 from app.modules.llm_inference.services.inference_client import InferenceClient
 from app.modules.llm_management.services.model_registry_service import ModelRegistryService
 from app.modules.chat.repositories.conversation_repository import ConversationRepository
@@ -17,10 +18,10 @@ class ChatServices:
     message_repository: MessageRepository
     conversation_service: ConversationService
     chat_stream_service: ChatStreamService
+    chat_model_service: ChatModelService
 
 
 async def build_chat_services(
-        settings: Settings,
         database: AsyncIOMotorDatabase,
         registry_service: ModelRegistryService,
         inference_client: InferenceClient,
@@ -40,10 +41,13 @@ async def build_chat_services(
         conversation_service=conversation_service,
         inference_client=inference_client,
     )
-
+    chat_model_service = ChatModelService(
+        registry_service=registry_service
+    )
     return ChatServices(
         conversation_repository=conversation_repository,
         message_repository=message_repository,
         conversation_service=conversation_service,
         chat_stream_service=chat_stream_service,
+        chat_model_service=chat_model_service,
     )

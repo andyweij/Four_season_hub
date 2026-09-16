@@ -28,7 +28,6 @@ async def build_app_services(settings: Settings) -> AppServices:
     inference_client = InferenceClient(http_client)
 
     chat = await build_chat_services(
-        settings=settings,
         database=database,
         registry_service=llm_management.registry_service,
         inference_client=inference_client,
