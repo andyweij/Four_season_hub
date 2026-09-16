@@ -72,3 +72,13 @@ class ModelRegistryService:
         model = self._registry.get(model_name)
         if model is not None and model.instance is not None:
             model.instance.status = status
+
+    def pre_check(self, model_name: str) -> bool:
+        model = self._registry.get(model_name)
+        if model.instance is None:
+            return False
+        if model.endpoint is None:
+            return False
+        if not model.catalog.is_chat_model:
+            return False
+        return model.instance.status == ModelRuntimeStatus.READY

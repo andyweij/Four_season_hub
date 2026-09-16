@@ -4,16 +4,20 @@ from app.modules.chat.schemas.chat_request import ChatRequest
 from app.modules.chat.schemas import chat_response
 from fastapi import APIRouter
 from app.modules.chat.services.chat_stream_service import ChatStreamService
+from app.modules.chat.dependencies import ChatStreamServiceDependency
 import logging
+from fastapi.responses import StreamingResponse
 
 logger = logging.getLogger("app")
 router = APIRouter(
     tags=["Chat"],
 )
 
+DEV_USER_ID = "dev-user"
 
-@router.post("/stream/chat", response_model=chat_response.ChatResponse)
-async def chat(request: ChatRequest):
+
+@router.post("/chat/stream", response_model=chat_response.ChatResponse)
+async def chat(request: ChatRequest, chat_stream_service: ChatStreamServiceDependency):
     """
     Chat with the model.
 
@@ -23,19 +27,11 @@ async def chat(request: ChatRequest):
     - **parameters**: The generation parameters to use for the chat.
     """
 
-    contents = list(map(lambda msg: msg.content, request.message))
+    contents = list(map(lambda msg: msg.content, request.messages))
     logger.info("Received message: %s", contents)
-    await ChatStreamService.chat_stream(request)
-    user_question = request.message[-1].content if request.message else ""
-    
-    return chat_response.ChatResponse(
-        request_id=str(uuid.uuid4()),
-        conversation_id=str(uuid.uuid4()),
-        message_id=str(uuid.uuid4()),
-        model=request.model,
-        message=chat_response.ChatMessageResponse(
-            role="assistant",
-            content=f"Echo: {user_question}",  # 將取出的內容放進回傳結果
-        ),
-        finish_reason="stop",
-    )
+
+    async def event_generator():
+        async for event in chat_stream_service.chat_stream(request, DEV_USER_ID):
+            yield f"event: {event.type.value}\ndata: {event.model_dump_json()}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")

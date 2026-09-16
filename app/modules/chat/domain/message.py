@@ -1,12 +1,11 @@
 from datetime import datetime
-from typing import Literal
 
 from pydantic import BaseModel
-from app.modules.chat.domain.enums import MessageRole, MessageStatus
+from app.modules.chat.domain.enums import MessageRole, MessageStatus, ChatContentType
 
 
 class ContentPart(BaseModel):
-    type: Literal["text"] = "text"
+    type: ChatContentType = ChatContentType.TEXT
     text: str
 
 

@@ -1,10 +1,20 @@
 from pydantic import BaseModel
-from app.modules.chat.domain.enums import MessageRole
+from app.modules.llm_inference.domain.enums import InferenceContentType, InferenceRole
+
+
+class ImageUrl(BaseModel):
+    url: str
+
+
+class InferenceContent(BaseModel):
+    type: InferenceContentType = InferenceContentType.TEXT
+    text: str
+    image_url: ImageUrl | None = None
 
 
 class InferenceMessage(BaseModel):
-    role: MessageRole
-    content: str
+    role: InferenceRole
+    content: list[InferenceContent]
 
 
 class InferenceRequest(BaseModel):

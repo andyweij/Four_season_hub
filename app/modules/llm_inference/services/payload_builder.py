@@ -7,7 +7,7 @@ PayloadBuilder = Callable[[dict, InferenceRequest], dict]
 def build_common_payload(inference_request: InferenceRequest) -> dict:
     payload = {
         "model": inference_request.model,
-        "messages": inference_request.messages,
+        "messages": [message.model_dump() for message in inference_request.messages],
         "temperature": inference_request.temperature,
         "top_p": inference_request.top_p,
         "max_tokens": inference_request.max_tokens,
