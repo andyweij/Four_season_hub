@@ -5,9 +5,17 @@ from app.modules.llm_management.runtimes.base import RuntimeInspector
 from app.modules.llm_management.services.model_artifact_service import ModelArtifactService
 from app.modules.llm_management.services.model_health_watcher import ModelHealthWatcher
 from app.modules.llm_management.domain.enums import ModelRuntimeStatus
+from dataclasses import dataclass
+
 import logging
 
 logger = logging.getLogger("app")
+
+
+@dataclass
+class ReadyModel:
+    model: ManagedModel
+    endpoint: str  # 注意：這裡是 str，不是 str | None——型別本身就保證了「一定有值」
 
 
 class ModelRegistryService:
@@ -73,17 +81,23 @@ class ModelRegistryService:
         if model is not None and model.instance is not None:
             model.instance.status = status
 
-    def pre_check(self, model_name: str) -> bool:
+    def get_ready_chat_model(self, model_name: str) -> ReadyModel | None:
         model = self._registry.get(model_name)
-        if model.instance is None:
-            return False
-        if model.endpoint is None:
-            return False
+        if model is None or model.instance is None:
+            return None
+        endpoint = model.endpoint
+        if endpoint is None:
+            return None
         if not model.catalog.is_chat_model:
-            return False
-        return model.instance.status == ModelRuntimeStatus.READY
+            return None
+        if model.instance.status != ModelRuntimeStatus.READY:
+            return None
+        return ReadyModel(model=model, endpoint=endpoint)
 
-    def get_all_runnings(self) -> list[str]:
+    def get_all_running_instances(self) -> list[str]:
+        """
+        取得所有正在運行的模型名稱列表，僅包含狀態為 READY 的模型。
+        """
         running_models = []
         for model in self._registry.values():
             if model.instance is not None and model.instance.status == ModelRuntimeStatus.READY:

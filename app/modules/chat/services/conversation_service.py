@@ -22,6 +22,7 @@ class ConversationService:
         if conversation.id != "":
             message = await self.add_user_message(conversation.id, user_id, self._extract_content(inference_message))
             return conversation, message
+        return None
 
     async def _record_message(
             self,

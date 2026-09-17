@@ -28,6 +28,7 @@ class MessageRepository:
             "created_at": message.created_at,
         }
         await self._collection.insert_one(doc)
+
         return self._to_domain(doc)
 
     async def list_for_conversation(self, conversation_id: str, user_id: str) -> list[Message]:

@@ -42,5 +42,4 @@ async def get_models(chat_model_service: ChatModelServiceDependency):
     """
     Get the list of available models.
     """
-    # models = chat_model_service.get_models()
     return await chat_model_service.get_models()
