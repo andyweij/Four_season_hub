@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     app.state.event_watcher = services.llm_management.event_watcher
     app.state.chat_stream_service = services.chat.chat_stream_service
     app.state.chat_model_service = services.chat.chat_model_service
-
+    app.state.conversation_service = services.chat.conversation_service
     logger.info(
         "Model registry initialized with %d models",
         len(services.llm_management.registry_service.get_all()),

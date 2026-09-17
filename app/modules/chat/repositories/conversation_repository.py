@@ -6,6 +6,9 @@ from pymongo import ReturnDocument
 
 from app.modules.chat.domain.conversation import Conversation
 from app.modules.chat.exceptions import ConversationAccessDeniedError
+import logging
+
+logger = logging.getLogger("app")
 
 
 class ConversationRepository:

@@ -24,6 +24,12 @@ class ConversationService:
             return conversation, message
         return None
 
+    async def get_conversation_list(self, user_id: str) -> list[Conversation]:
+        return await self.conversation_repository.list_for_user(user_id)
+
+    async def get_conversation_by_id(self, conversation_id: str) -> Conversation:
+        ...
+
     async def _record_message(
             self,
             conversation_id: str,

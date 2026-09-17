@@ -1,4 +1,3 @@
-from app.modules.llm_management.domain import launch_config
 from app.modules.llm_management.domain.artifact import ArtifactStatus
 from app.modules.llm_management.domain.managed_model import ManagedModel
 from app.modules.llm_management.repositories.model_catalog import ModelCatalogRepository

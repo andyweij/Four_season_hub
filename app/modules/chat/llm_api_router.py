@@ -1,9 +1,11 @@
 from app.modules.chat.schemas.chat_request import ChatRequest
 from app.modules.chat.schemas import chat_response
 from fastapi import APIRouter
-from app.modules.chat.dependencies import ChatStreamServiceDependency, ChatModelServiceDependency
+from app.modules.chat.dependencies import ChatStreamServiceDependency, ChatModelServiceDependency, \
+    ConversationServiceDependency
 import logging
 from fastapi.responses import StreamingResponse
+from app.modules.chat.schemas.conversation_list import ConversationList
 
 logger = logging.getLogger("app")
 router = APIRouter(
@@ -41,3 +43,12 @@ async def get_models(chat_model_service: ChatModelServiceDependency):
     Get the list of available models.
     """
     return await chat_model_service.get_models()
+
+
+@router.get("/conversations", response_model=list[ConversationList])
+async def get_conversations(conversation_service: ConversationServiceDependency):
+    """
+    Get the list of available conversations.
+    """
+    return [ConversationList(**conversation.model_dump()) for conversation in
+            await conversation_service.get_conversation_list(DEV_USER_ID)]
