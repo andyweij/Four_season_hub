@@ -55,6 +55,7 @@ async def build_llm_management_services(settings: Settings) -> LlmManagementServ
         runtime_inspector=runtime_inspector,
         endpoint_host=settings.model_endpoint_host,
         container_prefix=settings.container_prefix,
+        llm_engine_type=settings.llm_engine_type,
         health_watcher=health_watcher,
     )
     await registry_service.build_registry()

@@ -1,3 +1,4 @@
+from app.modules.llm_management.domain import launch_config
 from app.modules.llm_management.domain.artifact import ArtifactStatus
 from app.modules.llm_management.domain.managed_model import ManagedModel
 from app.modules.llm_management.repositories.model_catalog import ModelCatalogRepository
@@ -6,7 +7,7 @@ from app.modules.llm_management.services.model_artifact_service import ModelArti
 from app.modules.llm_management.services.model_health_watcher import ModelHealthWatcher
 from app.modules.llm_management.domain.enums import ModelRuntimeStatus
 from dataclasses import dataclass
-
+from typing import Any
 import logging
 
 logger = logging.getLogger("app")
@@ -26,6 +27,7 @@ class ModelRegistryService:
             runtime_inspector: RuntimeInspector,
             endpoint_host: str,
             container_prefix: str,
+            llm_engine_type: str,
             health_watcher: ModelHealthWatcher,
     ):
         self._model_catalog = model_catalog
@@ -33,6 +35,7 @@ class ModelRegistryService:
         self._runtime_inspector = runtime_inspector
         self._endpoint_host = endpoint_host
         self._container_prefix = container_prefix
+        self._llm_engine_type = llm_engine_type
         self._health_watcher = health_watcher
         self._registry: dict[str, ManagedModel] = {}
 
@@ -47,9 +50,11 @@ class ModelRegistryService:
         self._registry = {
             entry.model_name: ManagedModel(
                 catalog=entry,
+                context_len=self._extract_config_from_catalog(entry.launch_config.args),
                 download_status=artifact_by_key[entry.model_name].status
                 if entry.model_name in artifact_by_key else ArtifactStatus.MISSING,
-                instance=instance_by_name.get(self._container_prefix + "_" + entry.model_name if self._container_prefix else entry.model_name),
+                instance=instance_by_name.get(
+                    self._container_prefix + "_" + entry.model_name if self._container_prefix else entry.model_name),
                 endpoint_host=self._endpoint_host,
                 effective_launch_config=entry.launch_config.model_copy(deep=True),  # Deep Copy，深層複製
             )
@@ -107,3 +112,7 @@ class ModelRegistryService:
             if model.instance is not None and model.instance.status == ModelRuntimeStatus.READY:
                 running_models.append(model.catalog.model_name)
         return running_models
+
+    def _extract_config_from_catalog(self, catalog_args: dict[str, Any]) -> int:
+        key = "max-model-len" if self._llm_engine_type == "vllm" else "ctx-size"
+        return catalog_args.get(key, -1)

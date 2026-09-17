@@ -14,7 +14,7 @@ class AvailableModelResponse(BaseModel):
 
     size: int
     max_images: int
-
+    max_model_len: int
     is_chat_model: bool
     supports_reasoning: bool
     supports_reasoning_effort: bool

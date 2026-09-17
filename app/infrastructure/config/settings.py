@@ -78,7 +78,9 @@ class Settings(BaseSettings):
     mongo_url: SecretStr
     mongo_db_name: str
     redis_url: SecretStr
-    container_prefix: str = "FSH"
+    container_prefix: str = ""
+    llm_engine_type: LLMEngineType = LLMEngineType.VLLM
+    gpu_provider: GPUType = GPUType.NONE
 
     @model_validator(mode="after")
     def validate_backend_settings(self) -> "Settings":

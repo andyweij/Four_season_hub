@@ -1,5 +1,3 @@
-import uuid
-
 from app.modules.chat.schemas.chat_request import ChatRequest
 from app.modules.chat.schemas import chat_response
 from fastapi import APIRouter

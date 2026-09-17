@@ -20,12 +20,12 @@
     },
     "launchConfig": {
       "args": {
-        "n-predict": "5000",
-        "ctx-size": "7000",
-        "main-gpu": "0",
-        "n-gpu-layers": "100",
+        "n-predict": 5000,
+        "ctx-size": 7000,
+        "main-gpu": 0,
+        "n-gpu-layers": 100,
         "flash-attn": "on",
-        "reasoning-budget": "0",
+        "reasoning-budget": 0,
         "boolean": [
           "metrics",
           "jinja",
@@ -57,12 +57,12 @@
     },
     "launchConfig": {
       "args": {
-        "n-predict": "-1",
-        "ctx-size": "4096",
-        "main-gpu": "0",
-        "n-gpu-layers": "99",
+        "n-predict": -1,
+        "ctx-size": 4096,
+        "main-gpu": 0,
+        "n-gpu-layers": 99,
         "flash-attn": "on",
-        "reasoning-budget": "0",
+        "reasoning-budget": 0,
         "pooling": "mean",
         "boolean": [
           "metrics",
