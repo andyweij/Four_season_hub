@@ -25,12 +25,14 @@ class ModelRegistryService:
             artifact_service: ModelArtifactService,
             runtime_inspector: RuntimeInspector,
             endpoint_host: str,
+            container_prefix: str,
             health_watcher: ModelHealthWatcher,
     ):
         self._model_catalog = model_catalog
         self._artifact_service = artifact_service
         self._runtime_inspector = runtime_inspector
         self._endpoint_host = endpoint_host
+        self._container_prefix = container_prefix
         self._health_watcher = health_watcher
         self._registry: dict[str, ManagedModel] = {}
 
@@ -47,7 +49,7 @@ class ModelRegistryService:
                 catalog=entry,
                 download_status=artifact_by_key[entry.model_name].status
                 if entry.model_name in artifact_by_key else ArtifactStatus.MISSING,
-                instance=instance_by_name.get("FSH_" + entry.model_name),
+                instance=instance_by_name.get(self._container_prefix + "_" + entry.model_name if self._container_prefix else entry.model_name),
                 endpoint_host=self._endpoint_host,
                 effective_launch_config=entry.launch_config.model_copy(deep=True),  # Deep Copy，深層複製
             )
@@ -65,7 +67,9 @@ class ModelRegistryService:
 
     async def refresh_instance(self, container_name: str) -> None:
         """Docker event 觸發時呼叫，只更新單一 model 的 runtime 狀態。"""
-        model = self._registry.get(container_name)
+        prefix = self._container_prefix + "_"
+        model_name = container_name.removeprefix(prefix) if container_name.startswith(prefix) else container_name
+        model = self._registry.get(model_name)
         if model is None:
             return
         model.instance = await self._runtime_inspector.get_instance(container_name)

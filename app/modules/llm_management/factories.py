@@ -172,7 +172,7 @@ def build_docker_launcher(
                 raise RuntimeError(
                     "docker_client is required for docker/podman runtime"
                 )
-            return DockerModelLauncher(docker_client, settings.container_network_name)
+            return DockerModelLauncher(docker_client, settings.container_network_name, settings.container_prefix)
 
         case RuntimeType.NATIVE:
             return NativeModelLauncher(

@@ -25,6 +25,19 @@ class CacheBackend(StrEnum):
     REDIS = "redis"
 
 
+class LLMEngineType(StrEnum):
+    VLLM = "vllm"
+    LLAMA_CPP = "llama_cpp"
+
+
+class GPUType(StrEnum):
+    NVIDIA = "nvidia"
+    AMD = "amd"
+    INTEL = "intel"
+    MACOS = "macos"
+    NONE = "none"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="APP_",
@@ -47,14 +60,15 @@ class Settings(BaseSettings):
     cache_backend: CacheBackend = CacheBackend.MEMORY
 
     database_url: SecretStr | None = None
-    postgre_user: SecretStr | None = None
-    postgre_pwd: SecretStr | None = None
+    postgres_user: SecretStr | None = None
+    postgres_pwd: SecretStr | None = None
     # redis_url: SecretStr | None = None
 
     runtime_check_interval_seconds: int = 10
     runtime_cache_ttl_seconds: int = 15
     model_base_path: Path
     llm_engine_path: Path
+    llm_engine_type: LLMEngineType
     # model_artifact_check_on_startup: bool = True
     # model_artifact_strict_startup: bool = False
     # 模型啟動檢查參數
@@ -63,6 +77,8 @@ class Settings(BaseSettings):
     container_network_name: str
     mongo_url: SecretStr
     mongo_db_name: str
+    redis_url: SecretStr
+    container_prefix: str = "FSH"
 
     @model_validator(mode="after")
     def validate_backend_settings(self) -> "Settings":

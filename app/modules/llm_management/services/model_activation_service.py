@@ -25,11 +25,13 @@ class ModelActivationService:
             runtime_inspector: RuntimeInspector,
             health_watcher: ModelHealthWatcher,
             endpoint_host: str = "127.0.0.1",
+            container_prefix: str = "",
             port_range: tuple[int, int] = (8000, 8030),
     ):
         self._launcher = launcher
         self._registry = registry_service
         self._endpoint_host = endpoint_host
+        self._container_prefix = container_prefix
         self._port_range = port_range
         self._health_watcher = health_watcher
         self._background_tasks: set[asyncio.Task] = set()  # 防止 task 被 GC 掉的關鍵
@@ -41,9 +43,9 @@ class ModelActivationService:
         self._health_watcher.watch(catalog.model_name, port, self._registry.update_instance_status)
         return instance  # 立刻回傳 STARTING，不等健康檢查跑完
 
-    async def disable_model(self, instance: ModelInstance) -> None:
+    async def disable_model(self, model_name: str, instance: ModelInstance) -> None:
         await self.runtime_inspector.stop_and_remove_instance(instance.name, instance.id)
-        self._registry.update_instance_status(instance.name, ModelRuntimeStatus.STOPPED)
+        self._registry.update_instance_status(model_name, ModelRuntimeStatus.STOPPED)
 
     """
     檢查指定的 port 是否可用，若可用則回傳該 port，否則在指定的 port 範圍內尋找第一個可用的 port。若整個範圍都沒有可用的 port，則拋出 PortAllocationError。

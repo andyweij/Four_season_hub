@@ -99,7 +99,7 @@ async def disable_model(model_name: str, registry: ModelRegistryServiceDependenc
         raise HTTPException(status_code=404, detail=f"Unknown model_name: {model_name}")
     if model.instance is not None:
         logger.info("Model %s disabled and instance %s stopped", model_name, model.instance.id)
-        await activation.disable_model(model.instance)
+        await activation.disable_model(model_name, model.instance)
         model.instance = None
     else:
         return {"model_name": model_name, "status": "note exist"}

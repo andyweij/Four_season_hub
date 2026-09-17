@@ -15,13 +15,13 @@ from app.modules.llm_management.domain.enums import ComponentType, ModelRuntimeS
 logger = logging.getLogger("app")
 
 INTERNAL_PORT = 8000
-CONTAINER_PREFIX = "FSH"
 
 
 class DockerModelLauncher:
-    def __init__(self, client: docker.DockerClient, network_name: str | None = None):
+    def __init__(self, client: docker.DockerClient, network_name: str | None = None, container_prefix: str = ""):
         self.client = client
         self.network_name = network_name
+        self._container_prefix = container_prefix
 
     async def launch(self, catalog, effective_config, port) -> ModelInstance:
         return await asyncio.to_thread(self._launch_sync, catalog, effective_config, port)
@@ -43,9 +43,10 @@ class DockerModelLauncher:
             "Launching docker model %s: image=%s command=%s",
             catalog.model_name, engine_image_name, " ".join(command),
         )
+        container_name = self._container_prefix + "_" + catalog.model_name if self._container_prefix else catalog.model_name
         container = self.client.containers.run(
             image=engine_image_name,
-            name=CONTAINER_PREFIX + "_" + catalog.model_name,
+            name=container_name,
             command=command,
             environment=parse_env_list(effective_config.env),
             ports={f"{INTERNAL_PORT}/tcp": port},
@@ -60,7 +61,7 @@ class DockerModelLauncher:
         )
         return ModelInstance(
             id=container.id,
-            name=catalog.model_name,
+            name=container_name,
             component=ComponentType.MODEL,
             status=ModelRuntimeStatus.STARTING,
             public_port=port,

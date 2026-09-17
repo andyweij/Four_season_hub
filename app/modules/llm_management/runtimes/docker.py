@@ -15,8 +15,6 @@ import logging
 
 logger = logging.getLogger("app")
 
-CONTAINER_PREFIX = "FSH"
-
 
 class DockerCompatRuntimeInspector:
     def __init__(self, client: docker.DockerClient):
