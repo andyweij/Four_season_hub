@@ -32,6 +32,17 @@ class ConversationRepository:
         doc["_id"] = result.inserted_id
         return self._to_domain(doc)
 
+    async def update(self, conversation: Conversation) -> None:
+        await self._collection.find_one_and_update(
+            {"_id": ObjectId(conversation.id), "user_id": conversation.user_id},
+            {"$set": {
+                "title": conversation.title,
+                "model": conversation.model,
+                "message_seq": conversation.message_seq,
+                "updated_at": datetime.now(UTC),
+            }},
+        )
+
     async def get_owned(self, conversation_id: str, user_id: str) -> Conversation | None:
         doc = await self._collection.find_one(
             {"_id": ObjectId(conversation_id), "user_id": user_id}

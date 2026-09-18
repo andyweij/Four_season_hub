@@ -6,6 +6,9 @@ from app.modules.chat.dependencies import ChatStreamServiceDependency, ChatModel
 import logging
 from fastapi.responses import StreamingResponse
 from app.modules.chat.schemas.conversation_list import ConversationList
+from fastapi import Path
+from app.modules.chat.schemas.MessageResponse import MessageResponse
+from app.modules.chat.domain.enums import ChatContentType
 
 logger = logging.getLogger("app")
 router = APIRouter(
@@ -52,3 +55,21 @@ async def get_conversations(conversation_service: ConversationServiceDependency)
     """
     return [ConversationList(**conversation.model_dump()) for conversation in
             await conversation_service.get_conversation_list(DEV_USER_ID)]
+
+
+@router.get("/sessions/{conversation_id}/messages", response_model=list[MessageResponse])
+async def get_messages(
+        conversation_id: str = Path(..., min_length=24, max_length=24, description="對話的 ID"),
+        conversation_service: ConversationServiceDependency = ...,
+):
+    """
+    Get the list of messages in a conversation.
+    """
+    messages = await conversation_service.get_message_list(conversation_id, DEV_USER_ID)
+    return [
+        MessageResponse(
+            role=message.role,
+            content="".join(part.text for part in message.content if part.type == ChatContentType.TEXT),
+        )
+        for message in messages
+    ]

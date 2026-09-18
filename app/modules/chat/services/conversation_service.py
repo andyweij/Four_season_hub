@@ -20,15 +20,30 @@ class ConversationService:
         conversation = await self.conversation_repository.create(user_id, model_name, title)
 
         if conversation.id != "":
-            message = await self.add_user_message(conversation.id, user_id, self._extract_content(inference_message))
+            message = await self.add_user_message(conversation.id, user_id, inference_message)
             return conversation, message
         return None
 
     async def get_conversation_list(self, user_id: str) -> list[Conversation]:
         return await self.conversation_repository.list_for_user(user_id)
 
-    async def get_conversation_by_id(self, conversation_id: str) -> Conversation:
-        ...
+    async def get_conversation_by_id(self, conversation_id: str, user_id: str) -> Conversation:
+        conversation = await self.conversation_repository.get_owned(conversation_id, user_id=user_id)
+        if conversation is None:
+            raise ValueError(f"Conversation with id {conversation_id} not found")
+        await self.message_repository.list_for_conversation(conversation_id, user_id)
+        return conversation
+
+    async def get_message_list(self, conversation_id: str, user_id: str) -> list[Message]:
+        return await self.message_repository.list_for_conversation(conversation_id, user_id)
+
+    async def update_conversation_title(self, conversation_id: str, user_id: str, title: str) -> Conversation | None:
+        conversation = await self.get_conversation_by_id(conversation_id, user_id)
+        if conversation.user_id != user_id:
+            return None
+        conversation.title = title
+        await self.conversation_repository.update(conversation)
+        return conversation
 
     async def _record_message(
             self,
@@ -48,7 +63,6 @@ class ConversationService:
             sequence=sequence,
             role=role,
             content=content,
-            model=model,
             finish_reason=finish_reason,
             usage=usage,
             status=MessageStatus.COMPLETE,
@@ -57,22 +71,21 @@ class ConversationService:
         await self.message_repository.insert(conversation_id, user_id, message)
         return message
 
-    async def add_user_message(self, conversation_id: str, user_id: str, content: list[ContentPart]) -> Message:
+    async def add_user_message(self, conversation_id: str, user_id: str, inference_message: ChatMessage) -> Message:
         return await self._record_message(conversation_id, user_id, MessageRole.USER,
-                                          content=content)
+                                          self._extract_content(inference_message))
 
     async def add_assistant_message(
             self,
             conversation_id: str,
             user_id: str,
-            content: list[ContentPart],
-            model: str,
+            inference_message: ChatMessage,
             finish_reason: str | None,
             usage: dict | None,
     ) -> Message:
         return await self._record_message(
-            conversation_id, user_id, MessageRole.ASSISTANT, content,
-            model=model, finish_reason=finish_reason, usage=usage,
+            conversation_id, user_id, MessageRole.ASSISTANT, self._extract_content(inference_message),
+            finish_reason=finish_reason, usage=usage,
         )
 
     @staticmethod

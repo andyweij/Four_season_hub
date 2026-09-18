@@ -5,7 +5,7 @@ from app.modules.chat.domain.enums import ChatEventType
 
 class ChatStreamEvent(BaseModel):
     type: ChatEventType
-    conversation_id: str
+    conversation_id: str | None = None
     user_message_id: str | None = None
     assistant_message_id: str | None = None
     content: str | None = None
