@@ -7,6 +7,9 @@ from pathlib import Path
 from app.modules.llm_management.domain.enums import ComponentType, ModelRuntimeStatus
 from app.modules.llm_management.domain.model_instance import ModelInstance
 from app.modules.llm_management.domain.models import ModelCatalogEntry
+from app.modules.llm_management.runtimes.launch_args import build_config_args, parse_env_list
+from app.modules.llm_management.domain.launch_config import LaunchConfig
+import os
 
 logger = logging.getLogger("app")
 
@@ -28,25 +31,25 @@ class NativeModelLauncher:
         self.log_dir = log_dir
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
-    async def launch(self, catalog: ModelCatalogEntry, effective_config: dict, port: int) -> ModelInstance:
+    async def launch(self, catalog: ModelCatalogEntry, effective_config: LaunchConfig, port: int) -> ModelInstance:
         return await asyncio.to_thread(self._launch_sync, catalog, effective_config, port)
 
-    def _launch_sync(self, catalog: ModelCatalogEntry, effective_config: dict, port: int) -> ModelInstance:
+    def _launch_sync(self, catalog: ModelCatalogEntry, effective_config: LaunchConfig, port: int) -> ModelInstance:
         model_path = self._resolve_model_path(catalog)
         executable = self.model_engine_path / "llama-server.exe"
-
         cmdline = [
             str(executable),
             MODEL_PATH_FLAG, str(model_path),
             PORT_FLAG, str(port),
             NAME_FLAG, catalog.model_name,
-            *self._build_config_args(effective_config),
+            *build_config_args(effective_config.args),
         ]
 
         log_path = self.log_dir / f"{catalog.model_name}.log"
         log_file = open(log_path, "ab")
 
         logger.info("Launching native model: %s", " ".join(cmdline))
+        env = effective_config.env
         process = subprocess.Popen(
             cmdline,
             stdout=log_file,
@@ -54,6 +57,7 @@ class NativeModelLauncher:
             stdin=subprocess.DEVNULL,  # 建議一併加上，理由見下
             cwd=str(self.model_engine_path),
             creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP,
+            env={**os.environ, **parse_env_list(env)} if env else None,
         )
 
         return ModelInstance(
@@ -70,13 +74,3 @@ class NativeModelLauncher:
         if catalog.entry_point:
             return base / catalog.entry_point
         return base
-
-    @staticmethod
-    def _build_config_args(effective_config: dict) -> list[str]:
-        args: list[str] = []
-        for key, value in effective_config.items():
-            if key == BOOLEAN_FLAGS_KEY:
-                args.extend(f"--{flag}" for flag in value)
-            else:
-                args.extend([f"--{key}", str(value)])
-        return args

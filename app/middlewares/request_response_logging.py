@@ -103,14 +103,16 @@ class RequestResponseLoggingMiddleware:
                 logger.info(
                     (
                         "HTTP method=%s path=%s status=%s "
-                        "duration_ms=%.2f request_body=%r response_body=%r"
+                        "duration_ms=%.2f "
+                        # "request_body=%r "
+                        # "response_body=%r "
                     ),
                     method,
                     path,
                     status_code,
                     elapsed_ms,
-                    body_preview(request_body, request_total),
-                    body_preview(response_body, response_total),
+                    # body_preview(request_body, request_total),
+                    # body_preview(response_body, response_total),
                 )
         finally:
             session_id_context.reset(sid_token)

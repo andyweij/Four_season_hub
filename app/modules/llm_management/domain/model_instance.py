@@ -5,7 +5,7 @@ from app.modules.llm_management.domain.enums import ComponentType, ModelRuntimeS
 
 
 class ModelInstance(BaseModel):
-    id: str
+    id: str | None = None
     name: str
     component: ComponentType
     status: ModelRuntimeStatus
