@@ -27,6 +27,10 @@ class DockerModelLauncher:
         return await asyncio.to_thread(self._launch_sync, catalog, effective_config, port)
 
     def _launch_sync(self, catalog: ModelCatalogEntry, effective_config, port) -> ModelInstance:
+        """
+        啟動指定的模型實例，並返回其 ModelInstance。
+        這個方法會立即返回 STARTING 狀態的 ModelInstance，而不會等待健康檢查完成。健康檢查會在背景中進行，並在完成後更新模型實例的狀態為 READY 或 FAILED。
+        """
         # 之後接：組 docker run 參數（image / volumes / labels / env / device_requests）
         engine_image_name = catalog.engine_image_name
         model_name = catalog.model_name

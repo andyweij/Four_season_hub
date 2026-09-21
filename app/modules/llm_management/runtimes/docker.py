@@ -92,3 +92,16 @@ class DockerCompatRuntimeInspector:
             public_port=extract_ports(container)[0],
             private_port=extract_ports(container)[1],
         )
+
+    async def start_instance(self, container_name: str) -> None:
+        await asyncio.to_thread(self._start_instance_sync, container_name)
+
+    async def _start_instance_sync(self, container_name: str) -> None:
+        try:
+            container = self.client.containers.get(container_name)
+        except NotFound:
+            logger.info("Container %s not found, cannot start", container_name)
+            return
+
+        if container.status == ModelRuntimeStatus.STOPPED:
+            await asyncio.to_thread(container.start)

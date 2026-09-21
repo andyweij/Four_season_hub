@@ -38,12 +38,19 @@ class ModelActivationService:
         self.runtime_inspector = runtime_inspector
 
     async def run_model(self, catalog: ModelCatalogEntry, effective_config: LaunchConfig) -> ModelInstance:
+        """
+        啟動指定的模型實例，並返回其 ModelInstance。
+        這個方法會立即返回 STARTING 狀態的 ModelInstance，而不會等待健康檢查完成。健康檢查會在背景中進行，並在完成後更新模型實例的狀態為 READY 或 FAILED。
+        """
         port = self._allocate_port()
         instance = await self._launcher.launch(catalog, effective_config, port)
         self._health_watcher.watch(catalog.model_name, port, self._registry.update_instance_status)
         return instance  # 立刻回傳 STARTING，不等健康檢查跑完
 
     async def disable_model(self, model_name: str, instance: ModelInstance) -> None:
+        """
+        停止並移除指定的模型實例，並更新其狀態為 STOPPED。
+        """
         await self.runtime_inspector.stop_and_remove_instance(instance.name, instance.id)
         self._registry.update_instance_status(model_name, ModelRuntimeStatus.STOPPED)
 
@@ -52,6 +59,10 @@ class ModelActivationService:
     """
 
     def _allocate_port(self) -> int:
+        """
+        在指定的 port 範圍內尋找第一個可用的 port，並回傳該 port。
+        若整個範圍都沒有可用的 port，則拋出 PortAllocationError。
+        """
         start, end = self._port_range
         for port in range(start, end):
             if self._is_port_free(port):
@@ -60,6 +71,9 @@ class ModelActivationService:
 
     @staticmethod
     def _is_port_free(port: int, host: str = "0.0.0.0") -> bool:
+        """
+        檢查指定的 port 是否可用，若可用則回傳 True，否則回傳 False。
+        """
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
                 s.bind((host, port))

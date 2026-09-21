@@ -59,6 +59,10 @@ async def run_model_app(
     ):
         raise HTTPException(status_code=409, detail="Model is already running")
 
+    if model.instance is not None and model.instance.status == ModelRuntimeStatus.STOPPED:
+        logger.info("Model %s was stopped, will restart", model_name)
+        await activation.disable_model(model_name, model.instance)
+        model.instance = None
     # llm_mgt_router.py run_model_app 內
     instance = await activation.run_model(model.catalog, model.effective_launch_config)
     model.instance = instance  # 立刻反映到 registry，不用等下一次 event
