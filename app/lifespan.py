@@ -23,6 +23,11 @@ async def lifespan(app: FastAPI):
     app.state.chat_stream_service = services.chat.chat_stream_service
     app.state.chat_model_service = services.chat.chat_model_service
     app.state.conversation_service = services.chat.conversation_service
+    app.state.token_verifier = services.token_verifier
+    app.state.keycloak_admin_client = (
+        services.keycloak_admin_client
+    )
+
     logger.info(
         "Model registry initialized with %d models",
         len(services.llm_management.registry_service.get_all()),

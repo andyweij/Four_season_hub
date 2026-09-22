@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from app.infrastructure.keycloak.admin_client import KeycloakAdminClient
+from app.infrastructure.keycloak.token_verifier import KeycloakTokenVerifier
 from app.modules.llm_management.bootstrap import build_llm_management_services, LlmManagementServices, \
     shutdown_llm_management
 
@@ -18,6 +20,8 @@ class AppServices:
     chat: ChatServices
     mongo_client: AsyncIOMotorClient
     http_client: httpx.AsyncClient
+    token_verifier: KeycloakTokenVerifier
+    keycloak_admin_client: KeycloakAdminClient
 
 
 async def build_app_services(settings: Settings) -> AppServices:
@@ -26,7 +30,23 @@ async def build_app_services(settings: Settings) -> AppServices:
     database = get_mongo_database(mongo_client, settings)
     http_client = httpx.AsyncClient()
     inference_client = InferenceClient(http_client)
+    token_verifier = KeycloakTokenVerifier(
+        http_client=http_client,
+        jwks_url=settings.keycloak_jwks_url,
+        issuer=settings.keycloak_issuer,
+        audience=settings.keycloak_audience,
+    )
 
+    keycloak_admin_client = KeycloakAdminClient(
+        http_client=http_client,
+        base_url=settings.keycloak_base_url,
+        realm=settings.keycloak_realm,
+        client_id=settings.keycloak_admin_client_id,
+        client_secret=(
+            settings.keycloak_admin_client_secret
+            .get_secret_value()
+        ),
+    )
     chat = await build_chat_services(
         database=database,
         registry_service=llm_management.registry_service,
@@ -37,6 +57,8 @@ async def build_app_services(settings: Settings) -> AppServices:
         chat=chat,
         mongo_client=mongo_client,
         http_client=http_client,
+        token_verifier=token_verifier,
+        keycloak_admin_client=keycloak_admin_client,
     )
 
 

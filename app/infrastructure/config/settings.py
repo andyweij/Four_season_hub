@@ -82,6 +82,14 @@ class Settings(BaseSettings):
     llm_engine_type: LLMEngineType = LLMEngineType.VLLM
     gpu_provider: GPUType = GPUType.NONE
 
+    # keycloak
+    keycloak_base_url: str
+    keycloak_realm: str
+    keycloak_audience: str
+    # 專供後端呼叫 Admin API
+    keycloak_admin_client_id: str
+    keycloak_admin_client_secret: SecretStr
+
     @model_validator(mode="after")
     def validate_backend_settings(self) -> "Settings":
         if (
@@ -104,6 +112,20 @@ class Settings(BaseSettings):
             )
 
         return self
+
+    @property
+    def keycloak_issuer(self) -> str:
+        return (
+            f"{self.keycloak_base_url.rstrip('/')}"
+            f"/realms/{self.keycloak_realm}"
+        )
+
+    @property
+    def keycloak_jwks_url(self) -> str:
+        return (
+            f"{self.keycloak_issuer}"
+            "/protocol/openid-connect/certs"
+        )
 
 
 @lru_cache

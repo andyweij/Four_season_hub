@@ -12,7 +12,8 @@ from app.modules.llm_management.exceptions import (
     PortAllocationError,
     UnsupportedOverrideKeysError,
 )
-
+from fastapi import APIRouter, Depends
+from app.security.dependencies import get_current_user
 
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(PortAllocationError)
@@ -50,6 +51,9 @@ def create_app() -> FastAPI:
     app.include_router(
         api_v1_router,
         prefix="/v1",
+        dependencies=[
+            Depends(get_current_user),
+        ],
     )
     app.add_middleware(RequestResponseLoggingMiddleware)
     return app
