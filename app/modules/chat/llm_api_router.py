@@ -10,7 +10,7 @@ from fastapi import Path
 from app.modules.chat.schemas.MessageResponse import MessageResponse
 from app.modules.chat.domain.enums import ChatContentType
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 router = APIRouter(
     prefix="/chat",
     tags=["Chat"],

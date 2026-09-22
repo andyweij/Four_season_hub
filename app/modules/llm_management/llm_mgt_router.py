@@ -15,7 +15,7 @@ from app.modules.llm_management.domain.enums import ModelRuntimeStatus
 from app.modules.llm_management.schemas.update_launch_config import UpdateLaunchConfigRequest
 from app.modules.llm_management.schemas.run_model import RunModelRequest, RunModelResponse
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 router = APIRouter(
     prefix="/mgt/models",
     tags=["LLM Management"],

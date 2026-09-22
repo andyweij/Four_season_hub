@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Any
 import logging
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 
 @dataclass

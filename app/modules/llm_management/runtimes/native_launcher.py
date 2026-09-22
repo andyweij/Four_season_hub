@@ -11,7 +11,7 @@ from app.modules.llm_management.runtimes.launch_args import build_config_args, p
 from app.modules.llm_management.domain.launch_config import LaunchConfig
 import os
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 MODEL_PATH_FLAG = "-m"
 PORT_FLAG = "--port"

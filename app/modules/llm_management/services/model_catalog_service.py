@@ -6,7 +6,7 @@ from app.modules.llm_management.repositories.model_catalog import (
 )
 import logging
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 
 class ModelCatalogService:

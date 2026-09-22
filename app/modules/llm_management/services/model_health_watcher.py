@@ -7,7 +7,7 @@ import httpx
 
 from app.modules.llm_management.domain.enums import ModelRuntimeStatus
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 StatusCallback = Callable[[str, ModelRuntimeStatus], None]
 

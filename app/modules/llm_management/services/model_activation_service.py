@@ -14,7 +14,7 @@ from app.modules.llm_management.exceptions import PortAllocationError
 from app.modules.llm_management.services.model_health_watcher import ModelHealthWatcher
 from app.modules.llm_management.domain.launch_config import LaunchConfig
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 
 class ModelActivationService:

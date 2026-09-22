@@ -12,7 +12,7 @@ from app.modules.llm_management.runtimes.labels import (
 from app.modules.llm_management.runtimes.launch_args import build_config_args, parse_env_list
 from app.modules.llm_management.domain.enums import ComponentType, ModelRuntimeStatus
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 INTERNAL_PORT = 8000
 

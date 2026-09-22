@@ -10,7 +10,7 @@ from app.modules.llm_inference.services.payload_builder import build_chat_payloa
 from app.modules.llm_inference.services.think_tag_parser import ThinkTagParser
 from app.modules.llm_inference.domain.inference_request import InferenceRequest
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 
 class InferenceClient:

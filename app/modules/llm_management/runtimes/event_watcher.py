@@ -10,7 +10,7 @@ from app.modules.llm_management.runtimes.labels import (
     HUB_OWNER_VALUE,
 )
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 RELEVANT_ACTIONS = {"start", "die", "stop", "health_status", "create", "remove"}
 

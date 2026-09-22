@@ -9,7 +9,7 @@ from app.modules.llm_management.domain.model_instance import (
 )
 import logging
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 HEALTH_CHECK_TIMEOUT_SECONDS = 2.0
 MODEL_PATH_FLAGS = ("-m", "--model")
 NAME_FLAG = "--alias"

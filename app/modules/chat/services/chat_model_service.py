@@ -1,4 +1,7 @@
 from app.modules.llm_management.services.model_registry_service import ModelRegistryService
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ChatModelService:
@@ -8,5 +11,9 @@ class ChatModelService:
         self.registry_service = registry_service
 
     async def get_models(self) -> list[str]:
-        """取得運行中模型資訊"""
-        return self.registry_service.get_all_running_instances()
+        logger.info("Listing ready chat models")
+
+        models = self.registry_service.get_all_running_instances()
+
+        logger.info("Ready chat models retrieved count=%d", len(models))
+        return models

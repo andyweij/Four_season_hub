@@ -13,7 +13,7 @@ from app.modules.llm_management.runtimes.labels import (
 )
 import logging
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 
 class DockerCompatRuntimeInspector:

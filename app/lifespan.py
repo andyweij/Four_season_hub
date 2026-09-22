@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from app.bootstrap import build_app_services, shutdown_app_services
 from app.infrastructure.config.settings import get_settings
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager

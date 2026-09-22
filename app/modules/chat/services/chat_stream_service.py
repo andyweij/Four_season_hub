@@ -9,7 +9,7 @@ from app.modules.chat.schemas.chat_request import ChatRequest, ChatMessage, Chat
 from app.modules.llm_inference.domain.inference_request import InferenceRequest
 from app.modules.chat.domain.chat_stream_event import ChatStreamEvent
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 
 class ChatStreamService:
