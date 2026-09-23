@@ -84,6 +84,8 @@ class DockerCompatRuntimeInspector:
             return None
         if container.labels.get(MANAGED_BY_LABEL) != HUB_OWNER_VALUE:
             return None
+        if container.name is None:
+            return None
         return ModelInstance(
             id=container.id,
             name=container.name,

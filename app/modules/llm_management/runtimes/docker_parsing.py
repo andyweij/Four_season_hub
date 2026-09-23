@@ -17,7 +17,7 @@ def classify_status(container) -> ModelRuntimeStatus:
         health = container.attrs.get("State", {}).get("Health", {}).get("Status")
         if health == "unhealthy":
             return ModelRuntimeStatus.UNHEALTHY
-        return ModelRuntimeStatus.READY
+        return ModelRuntimeStatus.STARTING
     if container.status == "created":
         return ModelRuntimeStatus.INSTALLED
     if container.status == "exited":

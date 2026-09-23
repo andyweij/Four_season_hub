@@ -23,15 +23,3 @@ class ChatEventType(StrEnum):
 class ChatContentType(StrEnum):
     TEXT = "text"
     IMAGE = "image_url"
-
-
-# class ChatModelRuntimeStatus(StrEnum):
-#     NOT_INSTALLED = "not_installed"
-#     INSTALLING = "installing"
-#     INSTALLED = "installed"
-#     STARTING = "starting"
-#     READY = "ready"
-#     UNHEALTHY = "unhealthy"
-#     STOPPED = "stopped"
-#     ERROR = "error"
-#     UNKNOWN = "unknown"
