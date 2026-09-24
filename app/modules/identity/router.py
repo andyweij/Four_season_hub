@@ -1,10 +1,8 @@
+import logging
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Response, status
 
-from app.infrastructure.keycloak.admin_client import (
-    KeycloakAdminClient,
-)
 from app.modules.identity.dependencies import (
     KeycloakAdminClientDependency,
 )
@@ -18,9 +16,8 @@ from app.security.dependencies import (
 )
 from app.security.models import CurrentUser
 
-
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/users")
-
 
 UserAdminDependency = Annotated[
     CurrentUser,
@@ -30,19 +27,22 @@ UserAdminDependency = Annotated[
 
 @router.get("/me")
 async def get_my_profile(
-    current_user: CurrentUserDependency,
-    admin_client: KeycloakAdminClientDependency,
+        current_user: CurrentUserDependency,
+        admin_client: KeycloakAdminClientDependency,
 ) -> dict[str, Any]:
-    return await admin_client.get_user(
+    user_data = await admin_client.get_user(
         current_user.subject
     )
+    roles = await admin_client.get_user_realm_roles(current_user.subject)
+    user_data["roles"] = [r["name"] for r in roles]
+    return user_data
 
 
 @router.patch("/me", status_code=status.HTTP_204_NO_CONTENT)
 async def update_my_profile(
-    body: UpdateUserRequest,
-    current_user: CurrentUserDependency,
-    admin_client: KeycloakAdminClientDependency,
+        body: UpdateUserRequest,
+        current_user: CurrentUserDependency,
+        admin_client: KeycloakAdminClientDependency,
 ) -> Response:
     changes = body.model_dump(
         exclude_none=True,
@@ -72,9 +72,9 @@ async def update_my_profile(
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_user(
-    body: CreateUserRequest,
-    _: UserAdminDependency,
-    admin_client: KeycloakAdminClientDependency,
+        body: CreateUserRequest,
+        _: UserAdminDependency,
+        admin_client: KeycloakAdminClientDependency,
 ) -> dict[str, str]:
     user_id = await admin_client.create_user(
         username=body.username,
@@ -93,10 +93,10 @@ async def create_user(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def update_user(
-    user_id: str,
-    body: UpdateUserRequest,
-    _: UserAdminDependency,
-    admin_client: KeycloakAdminClientDependency,
+        user_id: str,
+        body: UpdateUserRequest,
+        _: UserAdminDependency,
+        admin_client: KeycloakAdminClientDependency,
 ) -> Response:
     changes = body.model_dump(exclude_none=True)
 

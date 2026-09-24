@@ -89,6 +89,8 @@ class Settings(BaseSettings):
     # 專供後端呼叫 Admin API
     keycloak_admin_client_id: str
     keycloak_admin_client_secret: SecretStr
+    credential_encryption_key_v1: SecretStr
+    credential_encryption_key_current_version: int = 1
 
     @model_validator(mode="after")
     def validate_backend_settings(self) -> "Settings":

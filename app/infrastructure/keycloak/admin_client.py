@@ -194,3 +194,16 @@ class KeycloakAdminClient:
             )
 
             return self._access_token
+
+    async def get_user_realm_roles(
+        self,
+        user_id: str,
+    ) -> list[dict[str, Any]]:
+        """
+        取得使用者擁有的所有有效 Realm Roles（包含直接指派與透過群組/複合角色繼承）。
+        """
+        response = await self._request(
+            "GET",
+            f"/admin/realms/{self._realm}/users/{user_id}/role-mappings/realm/composite",
+        )
+        return response.json()

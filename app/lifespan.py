@@ -27,7 +27,9 @@ async def lifespan(app: FastAPI):
     app.state.keycloak_admin_client = (
         services.keycloak_admin_client
     )
-
+    app.state.cloud_llm_management_service = (
+        services.cloud_llm.management_service
+    )
     logger.info(
         "Model registry initialized with %d models",
         len(services.llm_management.registry_service.get_all()),

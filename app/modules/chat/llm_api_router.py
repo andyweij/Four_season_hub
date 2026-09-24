@@ -1,13 +1,10 @@
-from app.modules.chat.schemas.chat_request import ChatRequest
-from app.modules.chat.schemas import chat_response
+import logging
+from app.modules.chat.schemas import ChatRequest, ChatResponse, ConversationList, MessageResponse
 from fastapi import APIRouter
 from app.modules.chat.dependencies import ChatStreamServiceDependency, ChatModelServiceDependency, \
     ConversationServiceDependency
-import logging
 from fastapi.responses import StreamingResponse
-from app.modules.chat.schemas.conversation_list import ConversationList
 from fastapi import Path
-from app.modules.chat.schemas.MessageResponse import MessageResponse
 from app.modules.chat.domain.enums import ChatContentType
 
 logger = logging.getLogger(__name__)
@@ -19,7 +16,7 @@ router = APIRouter(
 DEV_USER_ID = "dev-user"
 
 
-@router.post("/stream", response_model=chat_response.ChatResponse)
+@router.post("/stream", response_model=ChatResponse)
 async def chat(request: ChatRequest, chat_stream_service: ChatStreamServiceDependency):
     """
     Chat with the model.

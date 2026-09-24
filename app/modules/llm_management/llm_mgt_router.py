@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from app.modules.llm_management.dependencies import (
     ModelActivationServiceDependency,
     ModelRegistryServiceDependency,
@@ -37,7 +37,7 @@ async def get_available_models(
     )
 
 
-@router.post("/run", response_model=RunModelResponse)
+@router.post("/run", response_model=RunModelResponse, status_code=status.HTTP_201_CREATED)
 async def run_model_app(
         request: RunModelRequest,
         registry: ModelRegistryServiceDependency,
@@ -95,7 +95,8 @@ async def update_launch_config(
     return {"model_name": request.model_name, "effective_launch_config": model.effective_launch_config}
 
 
-@router.delete("/disable-model/{model_name}")
+@router.delete("/disable-model/{model_name}",
+               status_code=status.HTTP_204_NO_CONTENT)
 async def disable_model(model_name: str, registry: ModelRegistryServiceDependency,
                         activation: ModelActivationServiceDependency):
     model = registry.get(model_name)
