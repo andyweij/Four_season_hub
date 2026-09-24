@@ -9,6 +9,7 @@ def to_available_model_response(model: ManagedModel) -> AvailableModelResponse:
         model_type=model.catalog.model_type,
         size=model.catalog.size,
         max_images=model.catalog.max_images,
+        max_model_len=model.context_len,
         is_chat_model=model.catalog.is_chat_model,
         supports_reasoning=model.catalog.supports_reasoning,
         supports_reasoning_effort=model.catalog.supports_reasoning_effort,

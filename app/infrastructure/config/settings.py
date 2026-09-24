@@ -25,6 +25,19 @@ class CacheBackend(StrEnum):
     REDIS = "redis"
 
 
+class LLMEngineType(StrEnum):
+    VLLM = "vllm"
+    LLAMA_CPP = "llama_cpp"
+
+
+class GPUType(StrEnum):
+    NVIDIA = "nvidia"
+    AMD = "amd"
+    INTEL = "intel"
+    MACOS = "macos"
+    NONE = "none"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="APP_",
@@ -47,17 +60,37 @@ class Settings(BaseSettings):
     cache_backend: CacheBackend = CacheBackend.MEMORY
 
     database_url: SecretStr | None = None
-    redis_url: SecretStr | None = None
+    postgres_user: SecretStr | None = None
+    postgres_pwd: SecretStr | None = None
+    # redis_url: SecretStr | None = None
 
     runtime_check_interval_seconds: int = 10
     runtime_cache_ttl_seconds: int = 15
     model_base_path: Path
     llm_engine_path: Path
-    model_artifact_check_on_startup: bool = True
-    model_artifact_strict_startup: bool = False
-    #模型啟動檢查參數
+    llm_engine_type: LLMEngineType
+    # model_artifact_check_on_startup: bool = True
+    # model_artifact_strict_startup: bool = False
+    # 模型啟動檢查參數
     model_health_check_interval_seconds: int = 5
     model_startup_timeout_seconds: int = 1800  # 30 分鐘
+    container_network_name: str
+    mongo_url: SecretStr
+    mongo_db_name: str
+    redis_url: SecretStr
+    container_prefix: str = ""
+    llm_engine_type: LLMEngineType = LLMEngineType.VLLM
+    gpu_provider: GPUType = GPUType.NONE
+
+    # keycloak
+    keycloak_base_url: str
+    keycloak_realm: str
+    keycloak_audience: str
+    # 專供後端呼叫 Admin API
+    keycloak_admin_client_id: str
+    keycloak_admin_client_secret: SecretStr
+    credential_encryption_key_v1: SecretStr
+    credential_encryption_key_current_version: int = 1
 
     @model_validator(mode="after")
     def validate_backend_settings(self) -> "Settings":
@@ -81,6 +114,20 @@ class Settings(BaseSettings):
             )
 
         return self
+
+    @property
+    def keycloak_issuer(self) -> str:
+        return (
+            f"{self.keycloak_base_url.rstrip('/')}"
+            f"/realms/{self.keycloak_realm}"
+        )
+
+    @property
+    def keycloak_jwks_url(self) -> str:
+        return (
+            f"{self.keycloak_issuer}"
+            "/protocol/openid-connect/certs"
+        )
 
 
 @lru_cache

@@ -14,14 +14,14 @@ from app.modules.llm_management.domain.models import (
 
 class LocalArtifactInspector:
     def __init__(
-        self,
-        model_base_path: Path,
+            self,
+            model_base_path: Path,
     ):
         self.model_base_path = model_base_path.resolve()
 
     async def inspect(
-        self,
-        model: ModelCatalogEntry,
+            self,
+            model: ModelCatalogEntry,
     ) -> ArtifactCheckResult:
         return await asyncio.to_thread(
             self._inspect_sync,
@@ -29,8 +29,8 @@ class LocalArtifactInspector:
         )
 
     def _inspect_sync(
-        self,
-        model: ModelCatalogEntry,
+            self,
+            model: ModelCatalogEntry,
     ) -> ArtifactCheckResult:
         checked_at = datetime.now(timezone.utc)
 
@@ -90,8 +90,8 @@ class LocalArtifactInspector:
         )
 
     def _resolve_artifact_path(
-        self,
-        artifact_name: str,
+            self,
+            artifact_name: str,
     ) -> Path:
         relative_path = Path(artifact_name)
 
@@ -101,11 +101,11 @@ class LocalArtifactInspector:
             )
 
         artifact_path = (
-            self.model_base_path / relative_path
+                self.model_base_path / relative_path
         ).resolve()
 
         if not artifact_path.is_relative_to(
-            self.model_base_path
+                self.model_base_path
         ):
             raise ValueError(
                 "modelArtifact is outside model_base_path"
@@ -113,9 +113,9 @@ class LocalArtifactInspector:
 
         return artifact_path
 
+    @staticmethod
     def _calculate_size(
-        self,
-        path: Path,
+            path: Path,
     ) -> int:
         if path.is_file():
             return path.stat().st_size
@@ -138,14 +138,14 @@ class LocalArtifactInspector:
                         continue
 
                     if entry.is_file(
-                        follow_symlinks=False
+                            follow_symlinks=False
                     ):
                         total_size += entry.stat(
                             follow_symlinks=False
                         ).st_size
 
                     elif entry.is_dir(
-                        follow_symlinks=False
+                            follow_symlinks=False
                     ):
                         pending_directories.append(
                             Path(entry.path)

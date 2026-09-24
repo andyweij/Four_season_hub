@@ -9,7 +9,7 @@ from app.modules.llm_management.domain.model_instance import (
 )
 import logging
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 HEALTH_CHECK_TIMEOUT_SECONDS = 2.0
 MODEL_PATH_FLAGS = ("-m", "--model")
 NAME_FLAG = "--alias"
@@ -47,7 +47,7 @@ class WindowsNativeRuntimeInspector:
                 return await self._build_instance(info)
         return None
 
-    async def stop_and_remove_instance(self, instance_id: str) -> None:
+    async def stop_and_remove_instance(self, model_name: str, instance_id: str) -> None:
         try:
             proc = psutil.Process(int(instance_id))
             proc.terminate()

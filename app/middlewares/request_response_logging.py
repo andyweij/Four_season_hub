@@ -3,7 +3,7 @@ from time import perf_counter
 from starlette.types import ASGIApp, Receive, Scope, Send, Message
 from uuid import uuid4
 
-from app.core.context import session_id_context
+from app.core.context import REQUEST_ID_HEADER, session_id_context
 
 logger = logging.getLogger("app.http")
 
@@ -36,6 +36,7 @@ class RequestResponseLoggingMiddleware:
 
         sid = str(uuid4())
         sid_token = session_id_context.set(sid)
+        scope.setdefault("state", {})["request_id"] = sid
 
         request_body = bytearray()
         response_body = bytearray()
@@ -65,6 +66,17 @@ class RequestResponseLoggingMiddleware:
 
             if message["type"] == "http.response.start":
                 status_code = message["status"]
+                header_name = REQUEST_ID_HEADER.lower().encode("latin-1")
+                headers = [
+                    (name, value)
+                    for name, value in message.get("headers", [])
+                    if name.lower() != header_name
+                ]
+                headers.append((header_name, sid.encode("latin-1")))
+                message = {
+                    **message,
+                    "headers": headers,
+                }
 
             elif message["type"] == "http.response.body":
                 chunk = message.get("body", b"")
@@ -103,14 +115,16 @@ class RequestResponseLoggingMiddleware:
                 logger.info(
                     (
                         "HTTP method=%s path=%s status=%s "
-                        "duration_ms=%.2f request_body=%r response_body=%r"
+                        "duration_ms=%.2f "
+                        # "request_body=%r "
+                        # "response_body=%r "
                     ),
                     method,
                     path,
                     status_code,
                     elapsed_ms,
-                    body_preview(request_body, request_total),
-                    body_preview(response_body, response_total),
+                    # body_preview(request_body, request_total),
+                    # body_preview(response_body, response_total),
                 )
         finally:
             session_id_context.reset(sid_token)

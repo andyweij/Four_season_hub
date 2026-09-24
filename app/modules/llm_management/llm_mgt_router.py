@@ -1,7 +1,6 @@
-import json
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from app.modules.llm_management.dependencies import (
     ModelActivationServiceDependency,
     ModelRegistryServiceDependency,
@@ -16,17 +15,14 @@ from app.modules.llm_management.domain.enums import ModelRuntimeStatus
 from app.modules.llm_management.schemas.update_launch_config import UpdateLaunchConfigRequest
 from app.modules.llm_management.schemas.run_model import RunModelRequest, RunModelResponse
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 router = APIRouter(
-    prefix="/mgt",
+    prefix="/mgt/models",
     tags=["LLM Management"],
 )
 
 
-@router.get(
-    "/available-models",
-    response_model=AvailableModelsResponse,
-)
+@router.get("", response_model=AvailableModelsResponse, )
 async def get_available_models(
         registry: ModelRegistryServiceDependency,
 ) -> AvailableModelsResponse:
@@ -41,7 +37,7 @@ async def get_available_models(
     )
 
 
-@router.post("/run-model", response_model=RunModelResponse)
+@router.post("/run", response_model=RunModelResponse, status_code=status.HTTP_201_CREATED)
 async def run_model_app(
         request: RunModelRequest,
         registry: ModelRegistryServiceDependency,
@@ -63,6 +59,10 @@ async def run_model_app(
     ):
         raise HTTPException(status_code=409, detail="Model is already running")
 
+    if model.instance is not None and model.instance.status == ModelRuntimeStatus.STOPPED:
+        logger.info("Model %s was stopped, will restart", model_name)
+        await activation.disable_model(model_name, model.instance)
+        model.instance = None
     # llm_mgt_router.py run_model_app 內
     instance = await activation.run_model(model.catalog, model.effective_launch_config)
     model.instance = instance  # 立刻反映到 registry，不用等下一次 event
@@ -77,7 +77,7 @@ async def run_model_app(
 ALLOWED_OVERRIDE_KEYS = {"max-model-len", "gpu-memory-utilization", "max-num-seqs", ...}
 
 
-@router.patch("/models/launch-config")
+@router.patch("/launch-config")
 async def update_launch_config(
         request: UpdateLaunchConfigRequest,
         registry: ModelRegistryServiceDependency,
@@ -90,20 +90,22 @@ async def update_launch_config(
     if unknown:
         raise HTTPException(status_code=400, detail=f"Unsupported override keys: {unknown}")
 
-    model.effective_launch_config.update(request.config_overrides)
+    model.effective_launch_config.args.update(request.config_overrides)
 
     return {"model_name": request.model_name, "effective_launch_config": model.effective_launch_config}
 
 
-@router.delete("/disable-model/{model_name}")
+@router.delete("/disable-model/{model_name}",
+               status_code=status.HTTP_204_NO_CONTENT)
 async def disable_model(model_name: str, registry: ModelRegistryServiceDependency,
                         activation: ModelActivationServiceDependency):
     model = registry.get(model_name)
     if model is None:
         raise HTTPException(status_code=404, detail=f"Unknown model_name: {model_name}")
-    logger.info("Model %s disabled and instance %s stopped", model_name, model.instance.id)
     if model.instance is not None:
-        await activation.disable_model(model.instance)
+        logger.info("Model %s disabled and instance %s stopped", model_name, model.instance.id)
+        await activation.disable_model(model_name, model.instance)
         model.instance = None
-
+    else:
+        return {"model_name": model_name, "status": "note exist"}
     return {"model_name": model_name, "status": "disabled"}

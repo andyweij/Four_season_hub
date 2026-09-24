@@ -13,7 +13,7 @@ from app.modules.llm_management.runtimes.labels import (
 )
 import logging
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 
 class DockerCompatRuntimeInspector:
@@ -35,8 +35,27 @@ class DockerCompatRuntimeInspector:
     ) -> list[ModelInstance]:
         return await asyncio.to_thread(self._list_hub_containers_sync, component)
 
-    async def stop_and_remove_instance(self, container_name: str) -> None:
-        ...
+    async def stop_and_remove_instance(self, model_name: str, container_id: str) -> None:
+        if not container_id:
+            return
+        await asyncio.to_thread(self._stop_and_remove_sync, model_name, container_id)
+
+    def _stop_and_remove_sync(self, model_name: str, container_id: str) -> None:
+        try:
+            container = self.client.containers.get(container_id)
+        except NotFound:
+            logger.info("Container %s for model %s already gone, nothing to do", container_id, model_name)
+            return
+
+        try:
+            if container.status == "running":
+                container.stop()
+            container.remove()
+        except NotFound:
+            logger.info("Container %s for model %s disappeared while stopping", container_id, model_name)
+        except docker.errors.APIError:
+            logger.exception("Failed to stop/remove container %s for model %s", container_id, model_name)
+            raise
 
     def _list_hub_containers_sync(self, component: ComponentType | None = None) -> list[ModelInstance]:
         label_filters = [f"{MANAGED_BY_LABEL}={HUB_OWNER_VALUE}"]
@@ -65,6 +84,8 @@ class DockerCompatRuntimeInspector:
             return None
         if container.labels.get(MANAGED_BY_LABEL) != HUB_OWNER_VALUE:
             return None
+        if container.name is None:
+            return None
         return ModelInstance(
             id=container.id,
             name=container.name,
@@ -73,3 +94,16 @@ class DockerCompatRuntimeInspector:
             public_port=extract_ports(container)[0],
             private_port=extract_ports(container)[1],
         )
+
+    async def start_instance(self, container_name: str) -> None:
+        await asyncio.to_thread(self._start_instance_sync, container_name)
+
+    async def _start_instance_sync(self, container_name: str) -> None:
+        try:
+            container = self.client.containers.get(container_name)
+        except NotFound:
+            logger.info("Container %s not found, cannot start", container_name)
+            return
+
+        if container.status == ModelRuntimeStatus.STOPPED:
+            await asyncio.to_thread(container.start)

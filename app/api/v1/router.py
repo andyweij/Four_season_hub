@@ -2,6 +2,10 @@ from fastapi import APIRouter
 
 from app.modules.chat.llm_api_router import router as chat_router
 from app.modules.llm_management.llm_mgt_router import router as llm_mgt_router
+from app.modules.cloud_llm_management.router import router as cloud_llm_router
+from app.modules.identity.router import (
+    router as identity_router,
+)
 
 api_v1_router = APIRouter()
 
@@ -13,4 +17,14 @@ api_v1_router.include_router(
 api_v1_router.include_router(
     llm_mgt_router,
     tags=["LLM_management"],
+)
+
+api_v1_router.include_router(
+    identity_router,
+    tags=["Identity"],
+)
+
+api_v1_router.include_router(
+    cloud_llm_router,
+    tags=["Cloud LLM Management"],
 )

@@ -19,6 +19,7 @@ from app.modules.llm_management.services.model_artifact_service import ModelArti
 from app.modules.llm_management.services.model_health_watcher import ModelHealthWatcher
 from app.modules.llm_management.services.model_registry_service import ModelRegistryService
 
+
 @dataclass
 class LlmManagementServices:
     model_catalog: ModelCatalogRepository
@@ -26,7 +27,6 @@ class LlmManagementServices:
     activation_service: ModelActivationService
     event_watcher: DockerEventWatcher | None
     docker_client: docker.DockerClient | None
-
 
 
 async def build_llm_management_services(settings: Settings) -> LlmManagementServices:
@@ -54,6 +54,8 @@ async def build_llm_management_services(settings: Settings) -> LlmManagementServ
         artifact_service=artifact_service,
         runtime_inspector=runtime_inspector,
         endpoint_host=settings.model_endpoint_host,
+        container_prefix=settings.container_prefix,
+        llm_engine_type=settings.llm_engine_type,
         health_watcher=health_watcher,
     )
     await registry_service.build_registry()
@@ -63,6 +65,7 @@ async def build_llm_management_services(settings: Settings) -> LlmManagementServ
         registry_service=registry_service,
         health_watcher=health_watcher,
         endpoint_host=settings.model_endpoint_host,
+        container_prefix=settings.container_prefix,
         runtime_inspector=runtime_inspector,
     )
 
