@@ -5,6 +5,10 @@ from app.modules.cloud_llm_management.domain.cloud_llm import CloudLLM
 from app.modules.cloud_llm_management.domain.encrypted_credential import EncryptedCredential
 from app.modules.cloud_llm_management.infrastructure.persistence.postgres.mappers import to_domain
 from app.modules.cloud_llm_management.infrastructure.persistence.postgres.models.cloud_llm_record import CloudLLMRecord
+from .mappers import to_record
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class PostgresCloudLLMRepository:
@@ -45,7 +49,15 @@ class PostgresCloudLLMRepository:
             connection: CloudLLM,
             credential: EncryptedCredential,
     ) -> CloudLLM:
-        ...
+        record = to_record(connection, credential)
+
+        async with self._session_factory.begin() as session:
+            session.add(record)
+            await session.flush()
+            result = to_domain(record)
+        logger.info(f"Added CloudLLM connection: {result.id}")
+        # 離開 begin 區塊時已完成 commit；失敗則拋出例外。
+        return result
 
     async def update(
             self,

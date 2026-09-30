@@ -1,7 +1,11 @@
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel, SecretStr, ConfigDict
+from pydantic.alias_generators import to_camel
+
 from ..domain.enums import CloudLLMProvider
 
+
 class AddLLM(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid", )
     name: str
     provider: CloudLLMProvider
     model_name: str

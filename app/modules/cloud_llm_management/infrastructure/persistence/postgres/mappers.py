@@ -48,5 +48,17 @@ def to_record(
         encryption_nonce=credential.nonce,
         encryption_key_version=credential.key_version,
         api_key_hint=credential.api_key_hint,
-        # ...
+        enabled=connection.enabled,
+        status=connection.status.value,
+        max_images=connection.max_images,
+        max_model_len=connection.max_model_len,
+        is_chat_model=connection.is_chat_model,
+        supports_reasoning=connection.supports_reasoning,
+        supports_reasoning_effort=connection.supports_reasoning_effort,
+        supports_tool_calling=connection.supports_tool_calling,
+        last_tested_at=connection.last_tested_at,
+        last_latency_ms=connection.last_latency_ms,
+        created_by=connection.created_by,
+        created_at=connection.created_at,
+        updated_at=connection.updated_at,
     )

@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 UserAdminDependency = Annotated[
-    CurrentUser, Depends(require_roles("user-admin"))
+    CurrentUser, Depends(require_roles("admin"))
 ]
 
 
@@ -30,7 +30,7 @@ async def get_cloud_llm_list(cloud_llm_service: CloudLLMManagementServiceDepende
     return await cloud_llm_service.get_cloud_llm_list()
 
 
-@router.post("/add",
+@router.post("",
              status_code=status.HTTP_201_CREATED,
              )
 async def add_cloud_llm(add_llm: AddLLM,
