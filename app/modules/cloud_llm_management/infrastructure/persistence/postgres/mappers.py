@@ -1,11 +1,11 @@
-from app.modules.cloud_llm_management.domain.cloud_llm import CloudLLM
+from app.modules.cloud_llm_management.domain.cloud_llm import CloudLLM, Capabilities
 from app.modules.cloud_llm_management.domain.encrypted_credential import EncryptedCredential
 from app.modules.cloud_llm_management.domain.enums import CloudLLMProvider, CloudLLMStatus
 from app.modules.cloud_llm_management.infrastructure.persistence.postgres.models.cloud_llm_record import CloudLLMRecord
 
 
 def to_domain(
-    record: CloudLLMRecord,
+        record: CloudLLMRecord,
 ) -> CloudLLM:
     return CloudLLM(
         id=record.id,
@@ -15,15 +15,17 @@ def to_domain(
         base_url=record.base_url,
         enabled=record.enabled,
         status=CloudLLMStatus(record.status),
-        max_images=record.max_images,
         max_model_len=record.max_model_len,
-        is_chat_model=record.is_chat_model,
-        supports_reasoning=record.supports_reasoning,
-        supports_reasoning_effort=(
-            record.supports_reasoning_effort
-        ),
-        supports_tool_calling=(
-            record.supports_tool_calling
+        capabilities=Capabilities(
+            vision=True if record.max_images > 0 else False,
+            streaming=record.is_chat_model,
+            reasoning=record.supports_reasoning,
+            reasoning_effort=(
+                record.supports_reasoning_effort
+            ),
+            tool_calling=(
+                record.supports_tool_calling
+            )
         ),
         api_key_hint=record.api_key_hint,
         credential_configured=True,
@@ -34,9 +36,10 @@ def to_domain(
         updated_at=record.updated_at,
     )
 
+
 def to_record(
-    connection: CloudLLM,
-    credential: EncryptedCredential,
+        connection: CloudLLM,
+        credential: EncryptedCredential,
 ) -> CloudLLMRecord:
     return CloudLLMRecord(
         id=connection.id,

@@ -7,6 +7,15 @@ from .enums import CloudLLMProvider, CloudLLMStatus
 
 
 @dataclass
+class Capabilities:
+    vision: bool
+    streaming: bool
+    reasoning: bool
+    reasoning_effort: bool
+    tool_calling: bool
+
+
+@dataclass
 class CloudLLM:
     id: str
     name: str
@@ -17,12 +26,8 @@ class CloudLLM:
     enabled: bool
     status: CloudLLMStatus
 
-    max_images: int
     max_model_len: int
-    is_chat_model: bool
-    supports_reasoning: bool
-    supports_reasoning_effort: bool
-    supports_tool_calling: bool
+    capabilities: Capabilities
 
     api_key_hint: str
     credential_configured: bool
