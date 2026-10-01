@@ -9,6 +9,8 @@
     "reasoning": false,
     "reasoningEffort": false,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 2,
       "overheadFactor": 1.08,
@@ -51,6 +53,8 @@
     "reasoning": false,
     "reasoningEffort": false,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 2,
       "overheadFactor": 1.08,
@@ -91,6 +95,8 @@
     "reasoning": false,
     "reasoningEffort": false,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 2,
       "overheadFactor": 1.08,
@@ -131,6 +137,8 @@
     "reasoning": false,
     "reasoningEffort": true,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 0.5,
       "overheadFactor": 1.08,
@@ -175,6 +183,8 @@
     "reasoning": false,
     "reasoningEffort": true,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 0.5,
       "overheadFactor": 1.08,
@@ -216,6 +226,8 @@
     "reasoning": false,
     "reasoningEffort": false,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 2,
       "overheadFactor": 1.08,
@@ -276,6 +288,8 @@
     "reasoning": false,
     "reasoningEffort": false,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 2,
       "overheadFactor": 1.08,
@@ -335,6 +349,8 @@
     "reasoning": false,
     "reasoningEffort": false,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 2,
       "overheadFactor": 1.08,
@@ -376,6 +392,8 @@
     "reasoning": false,
     "reasoningEffort": false,
     "isChatModel": false,
+    "streaming": false,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 2,
       "overheadFactor": 1.08,
@@ -399,6 +417,8 @@
     "engineImageName": "vllm/vllm-openai:v0.21.0",
     "engineType": "vllm",
     "size": 3373983927,
+    "streaming": false,
+    "toolCalling": false,
     "imagesSupport": 0,
     "reasoning": false,
     "reasoningEffort": false,
@@ -443,6 +463,8 @@
     "reasoning": false,
     "reasoningEffort": false,
     "isChatModel": false,
+    "streaming": false,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 2,
       "overheadFactor": 1.08,
@@ -483,6 +505,8 @@
     "reasoning": false,
     "reasoningEffort": false,
     "isChatModel": false,
+    "streaming": false,
+    "toolCalling": false,
     "modelConfig": {
       "precisionBytes": 2,
       "overheadFactor": 1.08,

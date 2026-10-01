@@ -66,6 +66,10 @@ def create_app() -> FastAPI:
             Depends(get_current_user),
         ],
     )
+    from app.modules.model_gateway.router import router as internal_gateway_router
+    from app.modules.model_gateway.compatibility.openai_router import router as model_proxy_router
+    app.include_router(internal_gateway_router)
+    app.include_router(model_proxy_router)
     app.add_middleware(RequestResponseLoggingMiddleware)
     return app
 

@@ -11,3 +11,6 @@ class ChatStreamEvent(BaseModel):
     content: str | None = None
     finish_reason: str | None = None
     usage: dict | None = None
+    run_id: str | None = None
+    stage: str | None = None
+    sources: list[dict] | None = None

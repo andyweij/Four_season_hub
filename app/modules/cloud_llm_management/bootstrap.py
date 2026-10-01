@@ -12,6 +12,8 @@ from dataclasses import dataclass
 @dataclass
 class CloudLlmManagementServices:
     management_service: CloudLLMManagementService
+    repository: PostgresCloudLLMRepository
+    credential_cipher: AesGcmCredentialCipher
 
 
 def build_cloud_llm_management_service(
@@ -35,6 +37,8 @@ def build_cloud_llm_management_service(
 
     return CloudLlmManagementServices(
         management_service=management_service,
+        repository=repository,
+        credential_cipher=credential_cipher,
     )
 
 

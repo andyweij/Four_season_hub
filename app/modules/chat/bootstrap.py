@@ -25,6 +25,7 @@ async def build_chat_services(
         database: AsyncIOMotorDatabase,
         registry_service: ModelRegistryService,
         inference_client: InferenceClient,
+        agent_services=None,
 ) -> ChatServices:
     conversation_repository = ConversationRepository(database)
     message_repository = MessageRepository(database)
@@ -40,6 +41,7 @@ async def build_chat_services(
         registry_service=registry_service,
         conversation_service=conversation_service,
         inference_client=inference_client,
+        agent_services=agent_services,
     )
     chat_model_service = ChatModelService(
         registry_service=registry_service

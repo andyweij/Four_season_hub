@@ -20,6 +20,8 @@ async def lifespan(app: FastAPI):
     app.state.model_registry_service = services.llm_management.registry_service
     app.state.model_activation_service = services.llm_management.activation_service
     app.state.event_watcher = services.llm_management.event_watcher
+    app.state.agent_services = services.agents
+    app.state.http_client = services.http_client
     app.state.chat_stream_service = services.chat.chat_stream_service
     app.state.chat_model_service = services.chat.chat_model_service
     app.state.conversation_service = services.chat.conversation_service
@@ -35,6 +37,7 @@ async def lifespan(app: FastAPI):
         len(services.llm_management.registry_service.get_all()),
     )
 
-    yield
-
-    await shutdown_app_services(services)
+    try:
+        yield
+    finally:
+        await shutdown_app_services(services)

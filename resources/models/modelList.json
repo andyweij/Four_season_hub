@@ -8,6 +8,8 @@
     "imagesSupport": 0,
     "reasoning": false,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "size": 4130226336,
     "modelConfig": {
       "precisionBytes": 2,
@@ -45,6 +47,8 @@
     "imagesSupport": 0,
     "reasoning": false,
     "isChatModel": true,
+    "streaming": true,
+    "toolCalling": false,
     "size": 4683073664,
     "modelConfig": {
       "precisionBytes": 0.5,

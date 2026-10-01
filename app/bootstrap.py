@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from app.modules.agent_management.bootstrap import build_agent_services, AgentServices
 
 from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -23,6 +24,7 @@ from app.core.postgre import build_postgres_engine, build_session_factory
 class AppServices:
     llm_management: LlmManagementServices
     chat: ChatServices
+    agents: AgentServices
     mongo_client: AsyncIOMotorClient
     http_client: httpx.AsyncClient
     token_verifier: KeycloakTokenVerifier
@@ -77,14 +79,17 @@ async def build_app_services(settings: Settings) -> AppServices:
             .get_secret_value()
         ),
     )
+    agents = await build_agent_services(settings, database, http_client, llm_management, cloud_llm)
     chat = await build_chat_services(
         database=database,
         registry_service=llm_management.registry_service,
         inference_client=inference_client,
+        agent_services=agents,
     )
     return AppServices(
         llm_management=llm_management,
         chat=chat,
+        agents=agents,
         mongo_client=mongo_client,
         http_client=http_client,
         token_verifier=token_verifier,

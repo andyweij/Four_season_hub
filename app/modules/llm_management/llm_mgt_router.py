@@ -1,6 +1,7 @@
 import logging
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from app.security.dependencies import require_roles
 from app.modules.llm_management.dependencies import (
     ModelActivationServiceDependency,
     ModelRegistryServiceDependency,
@@ -109,3 +110,14 @@ async def disable_model(model_name: str, registry: ModelRegistryServiceDependenc
     else:
         return {"model_name": model_name, "status": "note exist"}
     return {"model_name": model_name, "status": "disabled"}
+
+
+@router.delete("/registration/{model_name:path}", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_model_registration(model_name: str, registry: ModelRegistryServiceDependency,
+                                     current_user=Depends(require_roles("admin"))):
+    try:
+        await registry.remove_registration(model_name)
+    except LookupError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc

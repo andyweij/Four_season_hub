@@ -1,0 +1,54 @@
+{
+  "schema_version": "1",
+  "agents": [
+    {
+      "id": "web-search",
+      "name": "Sleipnir Web Search",
+      "version": "0.1.0",
+      "enabled": false,
+      "integration": {
+        "type": "hub_native",
+        "endpoint": "http://127.0.0.1:8101",
+        "contract_version": "1"
+      },
+      "runtime": {
+        "type": "external"
+      },
+      "model_binding": {
+        "type": "hub_per_run",
+        "gateway_profile_id": "internal-agent-gateway"
+      },
+      "capabilities": {
+        "task_submission": true,
+        "streaming": true,
+        "cancellation": true,
+        "status_query": true,
+        "structured_sources": true,
+        "generation_parameters": true
+      }
+    },
+    {
+      "id": "third-party-example",
+      "name": "Third-party Agent Example",
+      "version": "unverified",
+      "enabled": false,
+      "integration": {
+        "type": "registration_only"
+      },
+      "runtime": {
+        "type": "external"
+      },
+      "model_binding": {
+        "type": "hub_fixed",
+        "gateway_profile_id": "third-party-gateway"
+      },
+      "capabilities": {
+        "task_submission": false,
+        "streaming": false,
+        "cancellation": false,
+        "status_query": false,
+        "structured_sources": false
+      }
+    }
+  ]
+}

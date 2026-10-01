@@ -28,3 +28,6 @@ api_v1_router.include_router(
     cloud_llm_router,
     tags=["Cloud LLM Management"],
 )
+
+from app.modules.agent_management.router import router as agent_router
+api_v1_router.include_router(agent_router)

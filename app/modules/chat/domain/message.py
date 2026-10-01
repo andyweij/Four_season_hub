@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from app.modules.chat.domain.enums import MessageRole, MessageStatus, ChatContentType
 
 
@@ -21,3 +21,7 @@ class Message(BaseModel):
     usage: dict | None = None
     status: MessageStatus = MessageStatus.COMPLETE
     created_at: datetime
+    sources: list[dict] = Field(default_factory=list)
+    run_id: str | None = None
+    agent_id: str | None = None
+    agent_version: str | None = None

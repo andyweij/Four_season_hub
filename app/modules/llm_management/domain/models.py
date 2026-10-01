@@ -3,6 +3,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 from app.modules.llm_management.domain.launch_config import LaunchConfig
 
+
 class ModelCatalogEntry(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -67,4 +68,16 @@ class ModelCatalogEntry(BaseModel):
 
     metadata: dict[str, Any] = Field(
         default_factory=dict,
+    )
+
+    supports_streaming: bool = Field(
+        default=False,
+        alias="streaming",
+        strict=True,
+    )
+
+    supports_tool_calling: bool = Field(
+        default=False,
+        alias="toolCalling",
+        strict=True,
     )

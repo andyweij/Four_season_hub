@@ -45,6 +45,13 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+    # Agent features stay inactive until credentials and endpoints are configured.
+    agent_catalog_path: Path = Path(__file__).resolve().parents[3] / "resources/agents/agents.json"
+    agent_signing_key: SecretStr | None = None
+    agent_service_token: SecretStr | None = None
+    agent_credentials: SecretStr | None = None
+    agent_runtime_environment: SecretStr | None = None
+    agent_gateway_profiles: list[str] = ["internal-agent-gateway", "third-party-gateway"]
     model_endpoint_host: str = "localhost"
 
     runtime_type: RuntimeType = RuntimeType.DOCKER

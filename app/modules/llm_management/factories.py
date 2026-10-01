@@ -123,7 +123,7 @@ def build_memory_model_catalog(
     entries = load_catalog_file(catalog_path)
 
     return InMemoryModelCatalog(
-        entries=entries
+        entries=entries, catalog_path=catalog_path
     )
 
 

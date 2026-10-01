@@ -16,8 +16,8 @@ class ConversationService:
         self.message_repository = message_repository
 
     async def create_conversation(self, user_id: str, model_name: str, inference_message: ChatMessage,
-                                  title: str = "") -> tuple[Conversation, Message] | None:
-        conversation = await self.conversation_repository.create(user_id, model_name, title)
+                                  title: str = "", agent_id=None, model_ref=None) -> tuple[Conversation, Message] | None:
+        conversation = await self.conversation_repository.create(user_id, model_name, title, agent_id=agent_id, model_ref=model_ref)
 
         if conversation.id != "":
             message = await self.add_user_message(conversation.id, user_id, inference_message)
@@ -54,6 +54,7 @@ class ConversationService:
             model: str | None = None,
             finish_reason: str | None = None,
             usage: dict | None = None,
+            **metadata,
     ) -> Message:
         sequence = await self.conversation_repository.allocate_sequence(conversation_id, user_id)
         message = Message(
@@ -65,7 +66,11 @@ class ConversationService:
             content=content,
             finish_reason=finish_reason,
             usage=usage,
-            status=MessageStatus.COMPLETE,
+            status=metadata.get("status", MessageStatus.COMPLETE),
+            sources=metadata.get("sources", []),
+            run_id=metadata.get("run_id"),
+            agent_id=metadata.get("agent_id"),
+            agent_version=metadata.get("agent_version"),
             created_at=datetime.now(UTC),
         )
         await self.message_repository.insert(conversation_id, user_id, message)
@@ -82,10 +87,11 @@ class ConversationService:
             inference_message: ChatMessage,
             finish_reason: str | None,
             usage: dict | None,
+            **metadata,
     ) -> Message:
         return await self._record_message(
             conversation_id, user_id, MessageRole.ASSISTANT, self._extract_content(inference_message),
-            finish_reason=finish_reason, usage=usage,
+            finish_reason=finish_reason, usage=usage, **metadata,
         )
 
     @staticmethod

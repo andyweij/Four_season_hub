@@ -1,73 +1,61 @@
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
-
-from app.modules.cloud_llm_management.domain.cloud_llm import CloudLLM
 from app.modules.cloud_llm_management.domain.encrypted_credential import EncryptedCredential
-from app.modules.cloud_llm_management.infrastructure.persistence.postgres.mappers import to_domain
-from app.modules.cloud_llm_management.infrastructure.persistence.postgres.models.cloud_llm_record import CloudLLMRecord
-from .mappers import to_record
-import logging
-
-logger = logging.getLogger(__name__)
+from .mappers import to_domain, to_record
+from .models.cloud_llm_record import CloudLLMRecord
 
 
 class PostgresCloudLLMRepository:
-    def __init__(
-            self,
-            session_factory: async_sessionmaker[AsyncSession],
-    ):
+    def __init__(self, session_factory):
         self._session_factory = session_factory
 
-    async def list_all(self) -> list[CloudLLM]:
+    async def list_all(self):
         async with self._session_factory() as session:
-            result = await session.execute(
-                select(CloudLLMRecord)
-                .order_by(
-                    CloudLLMRecord.created_at.desc()
-                )
+            result = await session.execute(select(CloudLLMRecord).order_by(CloudLLMRecord.created_at.desc()))
+            return [to_domain(record) for record in result.scalars().all()]
+
+    async def get_by_id(self, connection_id):
+        async with self._session_factory() as session:
+            record = await session.get(CloudLLMRecord, connection_id)
+            return to_domain(record) if record else None
+
+    async def get_credential(self, connection_id):
+        async with self._session_factory() as session:
+            record = await session.get(CloudLLMRecord, connection_id)
+            if record is None:
+                return None
+            return EncryptedCredential(
+                ciphertext=record.encrypted_api_key, nonce=record.encryption_nonce,
+                key_version=record.encryption_key_version, api_key_hint=record.api_key_hint,
             )
 
-            return [
-                to_domain(record)
-                for record in result.scalars().all()
-            ]
-
-    async def get_by_id(
-            self,
-            connection_id: str,
-    ) -> CloudLLM | None:
-        pass
-
-    async def get_credential(
-            self,
-            connection_id: str,
-    ) -> EncryptedCredential | None:
-        ...
-
-    async def add(
-            self,
-            connection: CloudLLM,
-            credential: EncryptedCredential,
-    ) -> CloudLLM:
-        record = to_record(connection, credential)
-
+    async def add(self, connection, credential):
         async with self._session_factory.begin() as session:
+            record = to_record(connection, credential)
             session.add(record)
             await session.flush()
-            result = to_domain(record)
-        logger.info(f"Added CloudLLM connection: {result.id}")
-        # 離開 begin 區塊時已完成 commit；失敗則拋出例外。
-        return result
+            return to_domain(record)
 
-    async def update(
-            self,
-            connection: CloudLLM,
-            credential: EncryptedCredential | None = None,
-    ) -> CloudLLM:
-        ...
+    async def update(self, connection, credential=None):
+        async with self._session_factory.begin() as session:
+            record = await session.get(CloudLLMRecord, connection.id)
+            if record is None:
+                raise ValueError("Cloud connection was not found.")
+            if credential is None:
+                credential = EncryptedCredential(
+                    record.encrypted_api_key, record.encryption_nonce,
+                    record.encryption_key_version, record.api_key_hint,
+                )
+            replacement = to_record(connection, credential)
+            for column in CloudLLMRecord.__table__.columns:
+                if column.name != "id":
+                    setattr(record, column.name, getattr(replacement, column.name))
+            await session.flush()
+            return to_domain(record)
 
-    async def delete(
-            self,
-            connection_id: str,
-    ) -> bool:
-        ...
+    async def delete(self, connection_id):
+        async with self._session_factory.begin() as session:
+            record = await session.get(CloudLLMRecord, connection_id)
+            if record is None:
+                return False
+            await session.delete(record)
+            return True

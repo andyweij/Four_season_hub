@@ -12,3 +12,5 @@ class ConversationList(BaseModel):
     message_seq: int = 0
     created_at: datetime
     updated_at: datetime = Field(..., alias="lastModifyDttm")
+    agent_id: str | None = None
+    model_ref: dict | None = None

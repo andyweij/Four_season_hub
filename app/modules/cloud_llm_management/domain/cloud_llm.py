@@ -38,3 +38,18 @@ class CloudLLM:
     created_by: str
     created_at: datetime
     updated_at: datetime
+
+    max_images: int = 0
+    is_chat_model: bool = True
+
+    @property
+    def supports_reasoning(self):
+        return self.capabilities.reasoning
+
+    @property
+    def supports_reasoning_effort(self):
+        return self.capabilities.reasoning_effort
+
+    @property
+    def supports_tool_calling(self):
+        return self.capabilities.tool_calling

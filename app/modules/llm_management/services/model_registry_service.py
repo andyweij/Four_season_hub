@@ -115,3 +115,16 @@ class ModelRegistryService:
     def _extract_config_from_catalog(self, catalog_args: dict[str, Any]) -> int:
         key = "max-model-len" if self._llm_engine_type == "vllm" else "ctx-size"
         return catalog_args.get(key, -1)
+
+    async def remove_registration(self, model_name):
+        model = self.get(model_name)
+        if model is None:
+            raise LookupError("Model was not found.")
+        if model.instance is not None:
+            raise ValueError("Stop the model instance before removing its registration.")
+        remove = getattr(self._model_catalog, "remove", None)
+        if remove is None:
+            raise ValueError("Catalog backend does not support removal.")
+        if not await remove(model_name):
+            raise LookupError("Model was not found.")
+        self._registry.pop(model_name, None)

@@ -16,6 +16,8 @@ def to_domain(
         enabled=record.enabled,
         status=CloudLLMStatus(record.status),
         max_model_len=record.max_model_len,
+        max_images=record.max_images,
+        is_chat_model=record.is_chat_model,
         capabilities=Capabilities(
             vision=True if record.max_images > 0 else False,
             streaming=record.is_chat_model,
