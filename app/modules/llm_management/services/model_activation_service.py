@@ -3,16 +3,16 @@ import socket
 from app.modules.llm_management.runtimes.base import RuntimeInspector
 from app.modules.llm_management.runtimes.launcher_base import ModelLauncher
 from app.modules.llm_management.services.model_registry_service import ModelRegistryService
-from app.modules.llm_management.domain.models import (
-    ModelCatalogEntry,
+from app.modules.llm_management.domain.managed_model import (
+    ManagedModel
 )
 from app.modules.llm_management.domain.model_instance import ModelInstance
 import asyncio
 import logging
+from app.modules.llm_management.exceptions import PortAllocationError, ModelAlreadyRunningError, \
+    ModelStillLaunchingError
 from app.modules.llm_management.domain.enums import ModelRuntimeStatus
-from app.modules.llm_management.exceptions import PortAllocationError
 from app.modules.llm_management.services.model_health_watcher import ModelHealthWatcher
-from app.modules.llm_management.domain.launch_config import LaunchConfig
 
 logger = logging.getLogger(__name__)
 
@@ -36,23 +36,39 @@ class ModelActivationService:
         self._health_watcher = health_watcher
         self._background_tasks: set[asyncio.Task] = set()  # 防止 task 被 GC 掉的關鍵
         self.runtime_inspector = runtime_inspector
+        self._lock = asyncio.Lock()
+        self._reserved_ports: set[int] = set()
 
-    async def run_model(self, catalog: ModelCatalogEntry, effective_config: LaunchConfig) -> ModelInstance:
-        """
-        啟動指定的模型實例，並返回其 ModelInstance。
-        這個方法會立即返回 STARTING 狀態的 ModelInstance，而不會等待健康檢查完成。健康檢查會在背景中進行，並在完成後更新模型實例的狀態為 READY 或 FAILED。
-        """
-        port = self._allocate_port()
-        instance = await self._launcher.launch(catalog, effective_config, port)
-        self._health_watcher.watch(catalog.model_name, port, self._registry.update_instance_status)
-        return instance  # 立刻回傳 STARTING，不等健康檢查跑完
+    async def run_model(self, model: ManagedModel) -> ModelInstance:
+        async with self._lock:
+            if model.runtime_status in (ModelRuntimeStatus.STARTING, ModelRuntimeStatus.READY):
+                raise ModelAlreadyRunningError(model.catalog.model_name)
+            port = self._allocate_port()
+            self._reserved_ports.add(port)
+            model.runtime_status = ModelRuntimeStatus.STARTING
 
-    async def disable_model(self, model_name: str, instance: ModelInstance) -> None:
+        try:
+            instance = await self._launcher.launch(model.catalog, model.effective_launch_config, port)
+        except Exception:
+            model.runtime_status = ModelRuntimeStatus.ERROR
+            self._reserved_ports.discard(port)
+            raise
+
+        model.instance = instance
+        self._health_watcher.watch(model.catalog.model_name, port, self._registry.update_instance_status)
+        return instance
+
+    async def disable_model(self, model: ManagedModel) -> None:
         """
         停止並移除指定的模型實例，並更新其狀態為 STOPPED。
         """
-        await self.runtime_inspector.stop_and_remove_instance(instance.name, instance.id)
-        self._registry.update_instance_status(model_name, ModelRuntimeStatus.STOPPED)
+        if model.runtime_status == ModelRuntimeStatus.STARTING and model.instance is None:
+            raise ModelStillLaunchingError(model.catalog.model_name)
+        if model.instance is not None:
+            await self.runtime_inspector.stop_and_remove_instance(model.instance.name, model.instance.id)
+            self._reserved_ports.discard(model.instance.public_port)
+            model.instance = None
+        model.runtime_status = ModelRuntimeStatus.STOPPED
 
     """
     檢查指定的 port 是否可用，若可用則回傳該 port，否則在指定的 port 範圍內尋找第一個可用的 port。若整個範圍都沒有可用的 port，則拋出 PortAllocationError。
@@ -65,6 +81,8 @@ class ModelActivationService:
         """
         start, end = self._port_range
         for port in range(start, end):
+            if port in self._reserved_ports:
+                continue
             if self._is_port_free(port):
                 return port
         raise PortAllocationError(f"No free port in range {start}-{end}")

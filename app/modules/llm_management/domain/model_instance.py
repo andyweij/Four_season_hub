@@ -11,3 +11,14 @@ class ModelInstance(BaseModel):
     status: ModelRuntimeStatus
     public_port: int
     private_port: int
+
+    @classmethod
+    def placeholder(cls, name: str, port: int) -> "ModelInstance":
+        return cls(
+            id="",
+            name=name,
+            component=ComponentType.MODEL,
+            status=ModelRuntimeStatus.STARTING,
+            public_port=port,
+            private_port=port,
+        )

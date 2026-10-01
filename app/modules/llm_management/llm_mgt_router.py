@@ -65,7 +65,7 @@ async def run_model_app(
         await activation.disable_model(model_name, model.instance)
         model.instance = None
     # llm_mgt_router.py run_model_app 內
-    instance = await activation.run_model(model.catalog, model.effective_launch_config)
+    instance = await activation.run_model(model)
     model.instance = instance  # 立刻反映到 registry，不用等下一次 event
 
     return RunModelResponse(
@@ -105,7 +105,7 @@ async def disable_model(model_name: str, registry: ModelRegistryServiceDependenc
         raise HTTPException(status_code=404, detail=f"Unknown model_name: {model_name}")
     if model.instance is not None:
         logger.info("Model %s disabled and instance %s stopped", model_name, model.instance.id)
-        await activation.disable_model(model_name, model.instance)
+        await activation.disable_model(model)
         model.instance = None
     else:
         return {"model_name": model_name, "status": "note exist"}
